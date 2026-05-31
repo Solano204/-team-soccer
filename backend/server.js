@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const { Pool } = require('pg');
@@ -21,7 +20,6 @@ const pool = new Pool({
 // ── CATEGORÍAS ──────────────────────────────────────────────────────
 app.get('/categorias', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM categorias ORDER BY id')
     res.json(rows);
   } catch(e) { res.status(500).json({ error: e.message }); }
 });
