@@ -15,14 +15,18 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'npg_Jr93WiZEaQfI',
   ssl: { rejectUnauthorized: false }
 });
-app.get('/test-env', (req, res) => {
-  res.json({
-    host: process.env.DB_HOST || 'NOT SET',
-    port: process.env.DB_PORT || 'NOT SET',
-    db:   process.env.DB_NAME || 'NOT SET',
-    user: process.env.DB_USER || 'NOT SET',
-    node_env: process.env.NODE_ENV || 'NOT SET'
-  });
+app.get('/test-db', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM categorias ORDER BY id');
+    res.json({ ok: true, rows });
+  } catch(e) { 
+    res.status(500).json({ 
+      message: e.message,
+      code: e.code,
+      detail: e.detail,
+      stack: e.stack
+    }); 
+  }
 });
 
 
