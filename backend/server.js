@@ -30,7 +30,6 @@ app.get('/test-env', (req, res) => {
 app.get('/categorias', async (req, res) => {
   try {
 
-    "SELECT * FROM categorias ORDER BY id";
     const { rows } = await pool.query('SELECT * FROM categorias ORDER BY id')
     res.json(rows);
   } catch(e) { res.status(500).json({ error: e.message }); }
