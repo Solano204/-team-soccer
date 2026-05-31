@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" id="htmlRoot">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horarios — Fut 7 El Jaguar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="horarios-base.css">
+    <link rel="stylesheet" href="horarios-componentes.css">
+    <link rel="stylesheet" href="horarios-partidos.css">
+    <script>
+        const t = localStorage.getItem('tema_jaguar') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+    </script>
+</head>
+<script>
+  if (!sessionStorage.getItem('sesion_jaguar')) {
+    location.replace('../login/index.html');
+  }
+</script>
+<body>
+    <div class="layout-container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="header-icon">📅</div>
+                <div>
+                    <div class="header-title">Gestión de Horarios</div>
+                    <div class="header-sub">Fut 7 El Jaguar · Temporada 2025</div>
+                </div>
+            </div>
+            <div class="header-botones">
+                <button class="btn-limpiar" onclick="limpiarDatosCorruptos()">🗑️ Limpiar</button>
+                <button class="btn-volver" id="btnThemeHorarios" onclick="toggleThemePage()" title="Cambiar tema" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);min-width:40px;">🌙</button>
+                <button class="btn-volver" onclick="volverAtras()">← Volver</button>
+            </div>
+        </header>
+
+        <!-- PANEL IZQUIERDO -->
+        <aside class="panel-izquierdo">
+            <div class="controles-vista">
+                <div class="panel-title">
+                    <span class="panel-title-icon">🏆</span>
+                    <span>Categorías</span>
+                </div>
+                <div class="panel-hint">Arrastra partidos a la agenda →</div>
+            </div>
+            <div class="categorias-lista" id="categoriasLista"></div>
+        </aside>
+
+        <!-- PANEL DERECHO -->
+        <main class="panel-derecho">
+
+            <!-- Navegación semana -->
+            <div class="navegacion-semana">
+                <button class="btn-nav" onclick="cambiarSemana(-1)">◀</button>
+                <div class="semana-info-wrap">
+                    <div class="semana-label">Semana</div>
+                    <div class="semana-info" id="semanaInfo">Semana Actual</div>
+                </div>
+                <button class="btn-nav" onclick="cambiarSemana(1)">▶</button>
+            </div>
+
+            <!-- Agenda -->
+            <div class="agenda-container">
+                <table class="agenda-table">
+                    <thead>
+                        <tr>
+                            <th class="hora-cell">HORA</th>
+                            <th id="header-0"></th>
+                            <th id="header-1"></th>
+                            <th id="header-2"></th>
+                            <th id="header-3"></th>
+                            <th id="header-4"></th>
+                            <th id="header-5"></th>
+                            <th id="header-6"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="agendaBody"></tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="horarios-main.js"></script>
+    <script src="horarios-drag-drop.js"></script>
+    <script src="horarios-ui.js"></script>
+</body>
+<div class="rotar-msg">
+    <div class="rotar-icon">📱</div>
+    <div class="rotar-texto">Rota tu dispositivo</div>
+    <div class="rotar-sub">La agenda se ve mejor en modo horizontal</div>
+</div>
+</html>

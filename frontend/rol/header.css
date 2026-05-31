@@ -1,0 +1,89 @@
+/* ========== HEADER ========== */
+
+.header {
+    background: rgba(10,22,40,0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.9rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 1.2rem;
+}
+
+.header-left { display:flex; align-items:center; }
+
+.btn-volver-header {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    padding: 0.45rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all .2s;
+    white-space: nowrap;
+}
+.btn-volver-header:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+.header-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    justify-content: center;
+}
+
+.header-icon {
+    width: 40px; height: 40px;
+    background: rgba(245,158,11,0.15);
+    border: 1px solid rgba(245,158,11,0.3);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.header-sub {
+    font-size: 0.72rem;
+    color: var(--text2);
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+.header-right { display:flex; align-items:center; }
+
+.btn-header-pdf {
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.3);
+    color: #60a5fa;
+    padding: 0.45rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all .2s;
+    white-space: nowrap;
+}
+.btn-header-pdf:hover { background: rgba(59,130,246,0.2); }
+
+@media (max-width: 480px) {
+    .header { padding: 0.7rem 0.9rem; }
+    .header-title { font-size: 1.1rem; letter-spacing: 2px; }
+    .header-sub { display: none; }
+    .btn-header-pdf { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
+}

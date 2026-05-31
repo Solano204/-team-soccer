@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fut 7 El Jaguar — Acceso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --green-deep:  #0a1f0e;
+      --green-dark:  #0d2810;
+      --green-mid:   #112d14;
+      --green-grass: #1a4020;
+      --green-line:  rgba(255,255,255,0.12);
+      --gold:        #c8a84b;
+      --gold-light:  #e8c86a;
+      --gold-dim:    rgba(200,168,75,0.25);
+      --white:       #ffffff;
+      --white-60:    rgba(255,255,255,0.6);
+      --white-30:    rgba(255,255,255,0.3);
+      --white-10:    rgba(255,255,255,0.08);
+      --card-bg:     rgba(8,20,10,0.82);
+    }
+
+    html, body { width:100%; height:100%; overflow:hidden; font-family:'Barlow', sans-serif; }
+
+    /* ════════════════════════════════
+       FONDO — CANCHA AÉREA
+    ════════════════════════════════ */
+    body {
+      background: var(--green-deep);
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
+    }
+
+    /* canvas SVG de la cancha de fútbol */
+    .pitch {
+      position:fixed; inset:0; z-index:0;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+
+    .pitch svg {
+      width:130%; height:130%;
+      opacity:0.55;
+      transform: perspective(900px) rotateX(28deg) scale(1.1);
+      transform-origin: center 60%;
+    }
+
+    /* degradado sobre la cancha */
+    .pitch-overlay {
+      position:fixed; inset:0; z-index:1;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 50%,
+          transparent 30%, rgba(8,18,10,0.65) 75%, rgba(5,12,7,0.95) 100%),
+        linear-gradient(180deg,
+          rgba(5,12,7,0.8) 0%,
+          transparent 35%,
+          transparent 65%,
+          rgba(5,12,7,0.85) 100%);
+    }
+
+    /* ── partículas luz de estadio ── */
+    .stadium-lights {
+      position:fixed; inset:0; z-index:2; pointer-events:none; overflow:hidden;
+    }
+    .light-beam {
+      position:absolute;
+      width:2px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+      border-radius:2px;
+      animation: beamFlicker ease-in-out infinite;
+      transform-origin: top center;
+    }
+    @keyframes beamFlicker {
+      0%,100%{ opacity:0.6; transform:scaleX(1); }
+      50%    { opacity:1;   transform:scaleX(1.5); }
+    }
+
+    /* ════════════════════════════════
+       LAYOUT SPLIT
+    ════════════════════════════════ */
+    .layout {
+      position:relative; z-index:10;
+      display:flex; align-items:stretch;
+      width:min(900px, 95vw);
+      height:min(560px, 90vh);
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:
+        0 40px 100px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(255,255,255,0.06);
+      animation: layoutIn 1s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes layoutIn {
+      from{ opacity:0; transform:translateY(40px) scale(0.96); }
+      to  { opacity:1; transform:translateY(0) scale(1); }
+    }
+
+    /* ── PANEL IZQUIERDO — identidad ── */
+    .panel-left {
+      flex:1;
+      background: linear-gradient(155deg,
+        #0e2812 0%, #0a1f0d 40%, #071508 100%);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding:3rem 2.5rem;
+      position:relative; overflow:hidden;
+      border-right:1px solid rgba(255,255,255,0.06);
+    }
+
+    /* hexágonos decorativos fondo izquierdo */
+    .panel-left::before {
+      content:'';
+      position:absolute; inset:0;
+      background-image:
+        radial-gradient(circle at 30% 20%, rgba(200,168,75,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(26,64,32,0.6) 0%, transparent 50%);
+    }
+
+    /* línea dorada lateral */
+    .panel-left::after {
+      content:'';
+      position:absolute; top:15%; bottom:15%; right:0;
+      width:1px;
+      background:linear-gradient(180deg,
+        transparent, var(--gold) 30%, var(--gold-light) 50%, var(--gold) 70%, transparent);
+    }
+
+    /* escudo / logo */
+    .logo-wrap {
+      position:relative; z-index:1;
+      display:flex; flex-direction:column; align-items:center; gap:1.2rem;
+      margin-bottom:2.5rem;
+    }
+
+    /* escudo SVG */
+    .escudo {
+      width:100px; height:110px;
+      filter:
+        drop-shadow(0 0 24px rgba(200,168,75,0.5))
+        drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+      animation: escudoFloat 5s ease-in-out infinite;
+    }
+    @keyframes escudoFloat {
+      0%,100%{ transform:translateY(0); }
+      50%    { transform:translateY(-8px); }
+    }
+
+    .logo-title {
+      font-family:'Bebas Neue', cursive;
+      font-size:2.8rem; letter-spacing:6px;
+      color:var(--white); text-align:center; line-height:0.95;
+      text-shadow: 0 0 60px rgba(200,168,75,0.3);
+      position:relative; z-index:1;
+    }
+
+    .logo-title span {
+      display:block; font-size:1.6rem; letter-spacing:12px;
+      color:var(--gold); margin-top:0.2rem;
+    }
+
+    .logo-sep {
+      width:60px; height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold), transparent);
+      position:relative; z-index:1;
+    }
+
+    .logo-tagline {
+      font-family:'Barlow Condensed', sans-serif;
+      font-size:0.7rem; letter-spacing:5px;
+      text-transform:uppercase; color:rgba(255,255,255,0.3);
+      text-align:center; position:relative; z-index:1;
+    }
+
+    /* stats decorativos */
+    .stats-row {
+      position:relative; z-index:1;
+      display:flex; gap:2rem; margin-top:1rem;
+    }
+    .stat {
+      display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+    }
+    .stat-num {
+      font-family:'Bebas Neue', cursive;
+      font-size:1.8rem; color:var(--gold);
+      line-height:1;
+    }
+    .stat-lbl {
+      font-size:0.58rem; letter-spacing:2px;
+      text-transform:uppercase; color:rgba(255,255,255,0.3);
+    }
+    .stat-div {
+      width:1px; background:rgba(255,255,255,0.08);
+      align-self:stretch;
+    }
+
+    /* subtítulo El Jaguar de Comitán */
+    .season-tag {
+      position:absolute; bottom:1.5rem; left:50%; transform:translateX(-50%);
+      font-size:0.65rem; letter-spacing:3px; text-transform:uppercase;
+      color:rgba(255,255,255,0.28); white-space:nowrap;
+      font-family:'Barlow Condensed', sans-serif; font-weight:400;
+    }
+
+    /* ── PANEL DERECHO — formulario ── */
+    .panel-right {
+      width:min(360px, 50%);
+      background: var(--card-bg);
+      backdrop-filter:blur(24px);
+      display:flex; flex-direction:column;
+      justify-content:center;
+      padding:3rem 2.5rem;
+      position:relative; overflow:hidden;
+    }
+
+    /* textura sutil fondo derecho */
+    .panel-right::before {
+      content:'';
+      position:absolute; inset:0;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          transparent 0px, transparent 30px,
+          rgba(255,255,255,0.012) 30px, rgba(255,255,255,0.012) 31px
+        );
+      pointer-events:none;
+    }
+
+    /* ── FORM HEADER ── */
+    .form-header {
+      margin-bottom:2rem; position:relative; z-index:1;
+    }
+    .form-eyebrow {
+      font-size:0.62rem; letter-spacing:4px;
+      text-transform:uppercase; color:var(--gold);
+      font-family:'Barlow Condensed', sans-serif;
+      font-weight:600; margin-bottom:0.5rem;
+    }
+    .form-title {
+      font-family:'Bebas Neue', cursive;
+      font-size:2rem; letter-spacing:4px;
+      color:var(--white); line-height:1;
+    }
+    .form-sub {
+      font-size:0.78rem; color:rgba(255,255,255,0.38);
+      margin-top:0.4rem; font-weight:300;
+    }
+
+    /* ── INPUTS ── */
+    .form { display:flex; flex-direction:column; gap:1.1rem; position:relative; z-index:1; }
+
+    .field { display:flex; flex-direction:column; gap:0.4rem; }
+
+    .field-label {
+      font-size:0.6rem; font-weight:700;
+      letter-spacing:3px; text-transform:uppercase;
+      color:rgba(255,255,255,0.35);
+    }
+
+    .field-body { position:relative; }
+
+    .f-input {
+      width:100%;
+      padding:0.9rem 1rem 0.9rem 2.8rem;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:10px;
+      color:var(--white);
+      font-family:'Barlow', sans-serif;
+      font-size:0.95rem; font-weight:500;
+      transition:all 0.25s; outline:none;
+    }
+    .f-input::placeholder{ color:rgba(255,255,255,0.2); font-weight:300; }
+    .f-input:focus {
+      background:rgba(255,255,255,0.09);
+      border-color:rgba(200,168,75,0.5);
+      box-shadow:0 0 0 3px rgba(200,168,75,0.1);
+    }
+
+    /* icono campo */
+    .field-icon {
+      position:absolute; left:0.9rem; top:50%;
+      transform:translateY(-50%);
+      font-size:0.9rem; opacity:0.35;
+      pointer-events:none; transition:opacity 0.2s;
+    }
+    .field-body:focus-within .field-icon{ opacity:0.8; }
+
+    .btn-eye {
+      position:absolute; right:0.85rem; top:50%;
+      transform:translateY(-50%);
+      background:none; border:none;
+      color:rgba(255,255,255,0.25);
+      cursor:pointer; font-size:0.9rem;
+      transition:color 0.2s; padding:0.2rem;
+    }
+    .btn-eye:hover{ color:rgba(255,255,255,0.7); }
+
+    /* mensaje error */
+    .msg {
+      display:flex; align-items:center; gap:0.5rem;
+      background:rgba(220,50,50,0.1);
+      border:1px solid rgba(220,50,50,0.2);
+      border-radius:8px; padding:0.6rem 0.9rem;
+      color:#ff8a8a; font-size:0.76rem; font-weight:500;
+      opacity:0; transition:opacity 0.3s; min-height:2.2rem;
+    }
+    .msg.show{ opacity:1; }
+
+    /* ── BOTÓN ── */
+    .btn-login {
+      position:relative; overflow:hidden;
+      margin-top:0.4rem; padding:1rem 1.5rem;
+      background:linear-gradient(135deg, var(--gold) 0%, #a8882e 100%);
+      border:none; border-radius:10px;
+      color:#0a1a0a;
+      font-family:'Bebas Neue', cursive;
+      font-size:1.15rem; letter-spacing:6px;
+      cursor:pointer;
+      box-shadow:
+        0 4px 24px rgba(200,168,75,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+      transition:all 0.25s;
+    }
+    .btn-login::after {
+      content:'';
+      position:absolute; top:0; left:-110%;
+      width:60%; height:100%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform:skewX(-18deg); transition:left 0.5s;
+    }
+    .btn-login:hover {
+      transform:translateY(-2px);
+      box-shadow:0 8px 32px rgba(200,168,75,0.55);
+    }
+    .btn-login:hover::after{ left:160%; }
+    .btn-login:active{ transform:translateY(0); }
+
+    /* ── PIE FORM ── */
+    .form-foot {
+      margin-top:1.5rem; position:relative; z-index:1;
+      display:flex; align-items:center; gap:0.6rem;
+    }
+    .form-foot-line {
+      flex:1; height:1px;
+      background:rgba(255,255,255,0.07);
+    }
+    .form-foot-text {
+      font-size:0.6rem; letter-spacing:2px;
+      text-transform:uppercase; color:rgba(255,255,255,0.15);
+      white-space:nowrap;
+    }
+
+    /* ════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════ */
+    @media (max-width:640px) {
+    .layout { flex-direction:column; height:auto; border-radius:16px; max-height:none; }
+    .panel-left { padding:1.5rem; min-height:auto; }
+    .panel-left::after { display:none; }
+    .logo-wrap { margin-bottom:1rem; }
+    .escudo { width:70px; height:77px; }
+    .logo-title { font-size:1.8rem; }
+    .logo-tagline { display:none; }
+    .season-tag { position:relative; bottom:auto; left:auto; transform:none; margin-top:0.5rem; }
+    .panel-right { width:100%; padding:1.5rem; }
+    .stats-row { display:none; }
+    .form-title { font-size:1.6rem; }
+}
+  </style>
+</head>
+<body>
+
+<!-- ── CANCHA ── -->
+<div class="pitch">
+  <svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg">
+    <!-- césped base con franjas -->
+    <defs>
+      <pattern id="stripes" x="0" y="0" width="50" height="520" patternUnits="userSpaceOnUse">
+        <rect x="0"  y="0" width="25" height="520" fill="#1a4020"/>
+        <rect x="25" y="0" width="25" height="520" fill="#163618"/>
+      </pattern>
+      <filter id="blur-soft">
+        <feGaussianBlur stdDeviation="0.5"/>
+      </filter>
+    </defs>
+
+    <!-- base césped con franjas -->
+    <rect x="0" y="0" width="800" height="520" fill="url(#stripes)"/>
+
+    <!-- borde exterior cancha -->
+    <rect x="30" y="20" width="740" height="480" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2.5"/>
+
+    <!-- línea central -->
+    <line x1="400" y1="20" x2="400" y2="500"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- círculo central -->
+    <circle cx="400" cy="260" r="70"
+            fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- punto central -->
+    <circle cx="400" cy="260" r="4" fill="rgba(255,255,255,0.7)"/>
+
+    <!-- área grande izquierda -->
+    <rect x="30" y="145" width="130" height="230" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- área chica izquierda -->
+    <rect x="30" y="195" width="50" height="130" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- portería izquierda -->
+    <rect x="14" y="225" width="16" height="70" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- semicírculo área izquierda -->
+    <path d="M 160 145 A 70 70 0 0 1 160 375" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- punto penal izquierda -->
+    <circle cx="100" cy="260" r="4" fill="rgba(255,255,255,0.7)"/>
+
+    <!-- área grande derecha -->
+    <rect x="640" y="145" width="130" height="230" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- área chica derecha -->
+    <rect x="720" y="195" width="50" height="130" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- portería derecha -->
+    <rect x="770" y="225" width="16" height="70" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- semicírculo área derecha -->
+    <path d="M 640 145 A 70 70 0 0 0 640 375" fill="none"
+          stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+
+    <!-- punto penal derecha -->
+    <circle cx="700" cy="260" r="4" fill="rgba(255,255,255,0.7)"/>
+
+    <!-- esquinas -->
+    <path d="M 30 20 A 18 18 0 0 1 48 38"   fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+    <path d="M 770 20 A 18 18 0 0 0 752 38" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+    <path d="M 30 500 A 18 18 0 0 0 48 482" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+    <path d="M 770 500 A 18 18 0 0 1 752 482" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2"/>
+  </svg>
+</div>
+
+<div class="pitch-overlay"></div>
+
+<!-- luces de estadio -->
+<div class="stadium-lights" id="stadiumLights"></div>
+
+<!-- ── LAYOUT SPLIT ── -->
+<div class="layout">
+
+  <!-- PANEL IZQUIERDO -->
+  <div class="panel-left">
+
+    <div class="logo-wrap">
+      <!-- Escudo SVG -->
+      <svg class="escudo" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="shieldG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#1e4020"/>
+            <stop offset="100%" stop-color="#0a1f0e"/>
+          </linearGradient>
+          <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="transparent"/>
+            <stop offset="30%"  stop-color="#c8a84b"/>
+            <stop offset="50%"  stop-color="#e8c86a"/>
+            <stop offset="70%"  stop-color="#c8a84b"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </linearGradient>
+        </defs>
+        <!-- forma escudo -->
+        <path d="M50 4 L92 18 L92 55 Q92 84 50 106 Q8 84 8 55 L8 18 Z"
+              fill="url(#shieldG)" stroke="url(#goldG)" stroke-width="2"/>
+        <!-- franja horizontal dorada -->
+        <line x1="8" y1="52" x2="92" y2="52" stroke="url(#goldG)" stroke-width="1" opacity="0.4"/>
+        <!-- jaguar -->
+        <text x="50" y="68" text-anchor="middle" font-size="36">🐆</text>
+        <!-- estrella arriba -->
+        <text x="50" y="22" text-anchor="middle" font-size="10" fill="#c8a84b">★</text>
+      </svg>
+
+      <div class="logo-title">
+        FUT 7
+        <span>EL JAGUAR</span>
+      </div>
+      <div class="logo-sep"></div>
+      <div class="logo-tagline">Sistema de Gestión · Liga Oficial</div>
+    </div>
+
+    <div class="season-tag">El Jaguar de Comitán</div>
+  </div>
+
+  <!-- PANEL DERECHO -->
+  <div class="panel-right">
+
+    <div class="form-header">
+      <div class="form-eyebrow">Bienvenido</div>
+      <div class="form-title">Iniciar Sesión</div>
+      <div class="form-sub">Accede al sistema de gestión</div>
+    </div>
+
+    <form id="loginForm" class="form" autocomplete="off">
+
+      <div class="field">
+        <label class="field-label" for="usuario">Usuario</label>
+        <div class="field-body">
+          <span class="field-icon">👤</span>
+          <input class="f-input" type="text" id="usuario"
+                 placeholder="Ingresa tu usuario" required/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="password">Contraseña</label>
+        <div class="field-body">
+          <span class="field-icon">🔒</span>
+          <input class="f-input" type="password" id="password"
+                 placeholder="Ingresa tu contraseña" required/>
+          <button type="button" class="btn-eye" id="eyeBtn">👁️</button>
+        </div>
+      </div>
+
+      <div class="msg" id="msgEl"><span id="msgTxt"></span></div>
+
+      <button type="submit" class="btn-login">Acceder</button>
+
+    </form>
+
+    <div class="form-foot">
+      <div class="form-foot-line"></div>
+      <div class="form-foot-text">Fut 7 El Jaguar · v2.0</div>
+      <div class="form-foot-line"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── Luces de estadio ── */
+  (function() {
+    const container = document.getElementById('stadiumLights');
+    const positions = [8, 15, 85, 92];
+    positions.forEach((left, i) => {
+      const beam = document.createElement('div');
+      beam.className = 'light-beam';
+      beam.style.cssText = `
+        left:${left}%; top:0; height:${30 + Math.random()*20}vh;
+        animation-duration:${3 + i*0.7}s;
+        animation-delay:${i*0.4}s;
+        opacity:0.5;
+      `;
+      container.appendChild(beam);
+    });
+  })();
+
+  /* ── Toggle contraseña ── */
+  const pwEl   = document.getElementById('password');
+  const eyeBtn = document.getElementById('eyeBtn');
+  eyeBtn.addEventListener('click', () => {
+    const show = pwEl.type === 'password';
+    pwEl.type  = show ? 'text' : 'password';
+    eyeBtn.textContent = show ? '🙈' : '👁️';
+  });
+
+  /* ── Usuarios ── */
+  const usuarios = [
+  { usuario: "jaguar", password: "jaguar123" }
+];
+
+  const form   = document.getElementById('loginForm');
+  const msgEl  = document.getElementById('msgEl');
+  const msgTxt = document.getElementById('msgTxt');
+
+  function showErr(t) {
+    msgTxt.textContent = t;
+    msgEl.classList.add('show');
+    setTimeout(() => msgEl.classList.remove('show'), 4000);
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const u = document.getElementById('usuario').value.trim();
+    const p = pwEl.value;
+    if (!u || !p) { showErr('Completa usuario y contraseña'); return; }
+    const ok = usuarios.find(x => x.usuario === u && x.password === p);
+    if (ok) {
+    sessionStorage.setItem('sesion_jaguar', '1');
+    window.location.href = '../menu/menu.html';
+} else {
+      showErr('Usuario o contraseña incorrectos');
+      document.getElementById('usuario').value = '';
+      pwEl.value = '';
+      document.getElementById('usuario').focus();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puntos & Goles — Fut 7 El Jaguar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --bg:#0a1628; --bg-card:rgba(255,255,255,0.04); --bg-card-2:rgba(255,255,255,0.07);
+            --border:rgba(255,255,255,0.08); --text:#fff; --text-2:rgba(255,255,255,0.5);
+            --text-muted:rgba(255,255,255,0.25); --accent:#3b82f6; --accent-dim:rgba(59,130,246,0.12);
+            --gold:#c8a84b; --gold-dim:rgba(200,168,75,0.12); --gold-border:rgba(200,168,75,0.3);
+            --header-bg:rgba(255,255,255,0.02); --header-border:rgba(255,255,255,0.08);
+            --th-bg:rgba(255,255,255,0.06); --row-alt:rgba(255,255,255,0.02);
+            --row-hover:rgba(255,255,255,0.04); --shadow:rgba(0,0,0,0.4);
+            --input-bg:rgba(59,130,246,0.1); --input-color:#60a5fa; --sel-bg:rgba(255,255,255,0.05);
+        }
+        [data-theme="light"] {
+            --bg:#f0f4f8; --bg-card:rgba(255,255,255,0.7); --bg-card-2:#fff;
+            --border:rgba(0,0,0,0.08); --text:#0f172a; --text-2:rgba(15,23,42,0.55);
+            --text-muted:rgba(15,23,42,0.3); --accent:#2563eb; --accent-dim:rgba(37,99,235,0.1);
+            --gold:#a07828; --gold-dim:rgba(160,120,40,0.08); --gold-border:rgba(160,120,40,0.3);
+            --header-bg:rgba(255,255,255,0.7); --header-border:rgba(0,0,0,0.07);
+            --th-bg:rgba(37,99,235,0.06); --row-alt:rgba(0,0,0,0.015);
+            --row-hover:rgba(37,99,235,0.04); --shadow:rgba(0,0,0,0.1);
+            --input-bg:rgba(37,99,235,0.08); --input-color:#2563eb; --sel-bg:rgba(255,255,255,0.8);
+        }
+        html,body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); height:100vh; overflow:hidden; display:flex; flex-direction:column; transition:background 0.3s,color 0.3s; }
+        .header { display:flex; align-items:center; justify-content:space-between; padding:0.7rem 1.8rem; background:var(--header-bg); border-bottom:1px solid var(--header-border); backdrop-filter:blur(10px); flex-shrink:0; }
+        .hbrand { display:flex; align-items:center; gap:0.7rem; }
+        .hlogo { width:34px; height:34px; background:linear-gradient(135deg,var(--gold),#e8c86a); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:1rem; }
+        .htitle { font-family:'Bebas Neue',cursive; font-size:1.2rem; letter-spacing:4px; color:var(--text); line-height:1; }
+        .hsub { font-size:0.58rem; letter-spacing:3px; text-transform:uppercase; color:var(--gold); font-weight:600; }
+        .btn-volver { background:var(--bg-card); border:1px solid var(--border); color:var(--text-2); padding:0.45rem 0.9rem; border-radius:8px; font-family:'Outfit',sans-serif; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+        .btn-volver:hover { border-color:var(--accent); color:var(--text); }
+        .tabs { display:flex; background:var(--bg-card); border-bottom:1px solid var(--border); padding:0 1.5rem; flex-shrink:0; }
+        .tab { display:flex; align-items:center; gap:0.35rem; padding:0.65rem 1.1rem; background:none; border:none; border-bottom:2px solid transparent; color:var(--text-muted); font-family:'Outfit',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; white-space:nowrap; margin-bottom:-1px; }
+        .tab:hover { color:var(--text-2); }
+        .tab.activo { color:var(--accent); border-bottom-color:var(--accent); background:var(--accent-dim); }
+        .content { flex:1; overflow-y:auto; overflow-x:hidden; padding:1rem 1.5rem; }
+        .tw { display:none; }
+        .tw.visible { display:block; }
+        .card { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 6px 24px var(--shadow); margin-bottom:0.8rem; }
+        .card-hdr { display:flex; align-items:center; justify-content:space-between; padding:0.8rem 1.4rem; border-bottom:1px solid var(--border); background:var(--bg-card-2); }
+        .card-title { font-family:'Bebas Neue',cursive; font-size:1.05rem; letter-spacing:3px; color:var(--text); display:flex; align-items:center; gap:0.5rem; }
+        .badge { background:var(--accent-dim); border:1px solid rgba(59,130,246,0.25); color:var(--accent); padding:0.18rem 0.65rem; border-radius:20px; font-size:0.6rem; letter-spacing:2px; text-transform:uppercase; font-weight:700; }
+        .badge.gold { background:var(--gold-dim); border-color:var(--gold-border); color:var(--gold); }
+        .badge.ro { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.25); color:#f87171; }
+        .scroll-x { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; min-width:380px; }
+        thead { position:sticky; top:0; z-index:5; }
+        th { padding:0.5rem 0.5rem; text-align:center; font-size:0.58rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); background:var(--th-bg); border-bottom:2px solid var(--border); white-space:nowrap; }
+        th.th-eq { text-align:left; padding-left:1rem; min-width:120px; }
+        th.th-pts { color:var(--gold); background:var(--gold-dim); border-bottom-color:var(--gold-border); }
+        th.th-g { color:var(--accent); background:var(--accent-dim); border-bottom-color:rgba(59,130,246,0.3); }
+        tbody tr { border-bottom:1px solid var(--border); transition:all 0.15s; }
+        tbody tr:last-child { border-bottom:none; }
+        tbody tr:nth-child(even) { background:var(--row-alt); }
+        tbody tr:hover { background:var(--row-hover); }
+        tbody tr:nth-child(1) { border-left:3px solid var(--gold); }
+        tbody tr:nth-child(2) { border-left:3px solid var(--text-2); }
+        tbody tr:nth-child(3) { border-left:3px solid #cd7f32; }
+        td { padding:0.5rem 0.5rem; text-align:center; font-size:0.83rem; font-weight:600; color:var(--text); }
+        td.td-pos { font-family:'Bebas Neue',cursive; font-size:1rem; color:var(--accent); width:36px; }
+        tbody tr:nth-child(1) td.td-pos { color:var(--gold); }
+        tbody tr:nth-child(2) td.td-pos { color:var(--text-2); }
+        tbody tr:nth-child(3) td.td-pos { color:#cd7f32; }
+        td.td-eq { text-align:left; padding-left:1rem; font-weight:700; font-size:0.88rem; }
+        td.td-pts { font-family:'Bebas Neue',cursive; font-size:1.1rem; color:var(--gold); background:var(--gold-dim); border-left:1px solid var(--gold-border); }
+        td.td-g { font-family:'Bebas Neue',cursive; font-size:1rem; color:var(--accent); background:var(--accent-dim); }
+        td.td-ro { font-size:0.85rem; font-weight:600; color:var(--text-2); }
+        td.td-j { padding:0; }
+        .inp { width:100%; border:none; background:transparent; text-align:center; font-family:'Outfit',sans-serif; font-weight:700; font-size:0.8rem; color:var(--input-color); padding:0.5rem 0.2rem; outline:none; transition:background 0.2s; }
+        .inp:focus { background:var(--input-bg); border-radius:4px; }
+        .inp::-webkit-inner-spin-button, .inp::-webkit-outer-spin-button { -webkit-appearance:none; }
+        .inp[type=number] { -moz-appearance:textfield; }
+        .celda-empate { display:flex; flex-direction:column; align-items:center; gap:1px; padding:3px 1px; }
+        .emp-pts { font-weight:700; font-size:0.82rem; color:var(--gold); }
+        .btn-pen { background:var(--gold-dim); border:1px solid var(--gold-border); color:var(--gold); border-radius:3px; font-size:0.55rem; font-weight:800; padding:1px 4px; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
+        .btn-pen:hover { opacity:0.8; transform:scale(1.05); }
+        .btn-pen.ok { background:rgba(34,197,94,0.12); border-color:rgba(34,197,94,0.35); color:#4ade80; }
+        .btn-pen.ok:hover { background:rgba(239,68,68,0.12); border-color:rgba(239,68,68,0.35); color:#f87171; }
+        .btn-pen.ok:hover::after { content:' ✕'; }
+        .eq-acord { display:flex; flex-direction:column; gap:0.5rem; }
+        .eq-item { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color 0.2s; }
+        .eq-item.abierto { border-color:var(--accent); }
+        .eq-toggle { display:flex; align-items:center; justify-content:space-between; padding:0.85rem 1.2rem; cursor:pointer; background:var(--bg-card-2); transition:background 0.2s; user-select:none; }
+        .eq-toggle:hover { background:var(--accent-dim); }
+        .eq-toggle-left { display:flex; align-items:center; justify-content:center; gap:0.7rem; flex:1; }
+        .eq-toggle-icon { font-size:1.1rem; }
+        .eq-toggle-name { font-family:'Bebas Neue',cursive; font-size:1.15rem; letter-spacing:3px; color:var(--text); }
+        .eq-item.abierto .eq-toggle-name { color:var(--accent); }
+        .eq-toggle-goles { background:var(--accent-dim); border:1px solid rgba(59,130,246,0.25); color:var(--accent); padding:0.15rem 0.6rem; border-radius:20px; font-size:0.62rem; font-weight:700; letter-spacing:1px; }
+        .eq-toggle-arrow { font-size:0.7rem; color:var(--text-muted); transition:transform 0.25s; flex-shrink:0; }
+        .eq-item.abierto .eq-toggle-arrow { transform:rotate(180deg); color:var(--accent); }
+        .eq-body { display:none; border-top:1px solid var(--border); }
+        .eq-item.abierto .eq-body { display:block; }
+        .gol-wrap-center { display:flex; justify-content:center; padding:1rem; }
+        .gol-lista { display:flex; flex-direction:column; gap:0.5rem; width:100%; max-width:480px; }
+        .gol-row { display:flex; align-items:center; gap:0.9rem; padding:0.75rem 1rem; background:var(--bg-card-2); border:1px solid var(--border); border-radius:12px; transition:all 0.2s; position:relative; overflow:hidden; }
+        .gol-row::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:2px 0 0 2px; }
+        .gol-row.r1::before { background:var(--gold); } .gol-row.r2::before { background:var(--text-2); } .gol-row.r3::before { background:#cd7f32; } .gol-row.r4::before,.gol-row.r5::before { background:var(--accent); opacity:0.3; }
+        .gol-row:hover { border-color:var(--gold); transform:translateX(4px); box-shadow:0 4px 16px var(--shadow); }
+        .gol-pos { font-family:'Bebas Neue',cursive; font-size:1.5rem; min-width:32px; text-align:center; }
+        .p1{color:var(--gold);} .p2{color:var(--text-2);} .p3{color:#cd7f32;} .p4,.p5{color:var(--text-muted);}
+        .gol-info { flex:1; }
+        .gol-nom { font-weight:700; font-size:0.92rem; color:var(--text); }
+        .gol-eq { display:inline-block; margin-top:3px; background:var(--accent-dim); border:1px solid rgba(59,130,246,0.2); color:var(--accent); padding:0.1rem 0.5rem; border-radius:20px; font-size:0.58rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+        .gol-right { display:flex; flex-direction:column; align-items:flex-end; }
+        .gol-num { font-family:'Bebas Neue',cursive; font-size:2rem; color:var(--accent); line-height:1; }
+        .gol-lbl { font-size:0.55rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); }
+        .vacio { text-align:center; padding:2rem 1rem; color:var(--text-muted); }
+        .vacio h3 { font-family:'Bebas Neue',cursive; font-size:1.1rem; letter-spacing:2px; color:var(--text-2); margin-bottom:0.3rem; }
+        .vacio p { font-size:0.75rem; }
+        .content::-webkit-scrollbar { width:5px; }
+        .content::-webkit-scrollbar-track { background:transparent; }
+        .content::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+        @media(max-width:768px){ .header{padding:0.55rem 0.9rem;} .content{padding:0.7rem;} .tab{padding:0.55rem 0.7rem;font-size:0.65rem;} .sel-wrap{flex-direction:column;align-items:flex-start;} .sel-eq{max-width:100%;width:100%;} }
+    </style>
+<script>
+        var t = localStorage.getItem('tema_jaguar') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+    </script>
+    <script>
+        if (!sessionStorage.getItem('sesion_jaguar')) {
+            location.replace('../login/index.html');
+        }
+    </script>
+</head>
+
+<body>
+
+<header class="header">
+    <button class="btn-volver" onclick="history.back()">← Volver</button>
+    <div class="hbrand">
+        <div class="hlogo">🏆</div>
+        <div>
+            <div class="htitle">PUNTOS & GOLES</div>
+            <div class="hsub" id="headerSub">Categoría</div>
+        </div>
+    </div>
+    <div style="width:80px"></div>
+</header>
+
+<div class="tabs">
+    <button class="tab activo" data-tab="puntos">🏆 Puntos</button>
+    <button class="tab" data-tab="goles-equipo">⚽ Goles Equipo</button>
+    <button class="tab" data-tab="goles-jugador">👟 Goles Jugador</button>
+    <button class="tab" data-tab="goleadores">👑 Goleadores</button>
+</div>
+
+<div class="content">
+
+    <div id="puntos" class="tw visible">
+        <div class="card">
+            <div class="card-hdr">
+                <span class="card-title">📊 Clasificación General</span>
+                <span class="badge gold">Auto · Rol</span>
+            </div>
+            <div class="scroll-x"><table><thead id="h1"></thead><tbody id="b1"></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="goles-equipo" class="tw">
+        <div class="card">
+            <div class="card-hdr">
+                <span class="card-title">⚽ Goles por Jornada · Equipo</span>
+                </div>
+            <div class="scroll-x"><table><thead id="h2"></thead><tbody id="b2"></tbody></table></div>
+        </div>
+    </div>
+
+    <div id="goles-jugador" class="tw">
+        <div id="tabJug"></div>
+    </div>
+
+    <div id="goleadores" class="tw">
+        <div class="card">
+            <div class="card-hdr">
+                <span class="card-title" style="width:100%;justify-content:center;">👑 Top 5 Goleadores</span>
+            </div>
+            <div id="topWrap"><div class="vacio"><h3>Sin goles</h3><p>Ingresa goles en Goles Jugador</p></div></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  DATOS BASE
+// ══════════════════════════════════════
+var par     = new URLSearchParams(window.location.search);
+var cat     = par.get('categoria') || '';
+document.getElementById('headerSub').textContent = cat || 'Sin categoría';
+
+var KEY_JUG  = 'goles_jug_'  + cat;
+var KEY_PEN  = 'pen_extra_'  + cat;
+
+var API = 'http://localhost:3001';
+var catId = null;
+
+var equipos  = [];
+var rol      = [];
+var nJ       = 0;
+
+// ── Storage helpers ──
+function getJug()  { return JSON.parse(localStorage.getItem(KEY_JUG))  || {}; }
+function getPen()  { return JSON.parse(localStorage.getItem(KEY_PEN))  || {}; }
+function saveJug(d){ 
+    localStorage.setItem(KEY_JUG, JSON.stringify(d));
+    if (catId) fetch(API+'/goles', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({categoria_id:catId, datos:d}) });
+}
+function savePen(d){ 
+    localStorage.setItem(KEY_PEN, JSON.stringify(d));
+    if (catId) fetch(API+'/penales', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({categoria_id:catId, datos:d}) });
+}
+
+function getGolesJugJornada(eq, nom, j) {
+    var d = getJug();
+    var v = d[eq] && d[eq][nom] && d[eq][nom]['j'+j];
+    return (v !== null && v !== undefined) ? parseInt(v) : 0;
+}
+function setGolesJug(eq, nom, j, val) {
+    var d = getJug();
+    if (!d[eq]) d[eq] = {};
+    if (!d[eq][nom]) d[eq][nom] = {};
+    d[eq][nom]['j'+j] = (val === '' || isNaN(parseInt(val))) ? null : parseInt(val);
+    saveJug(d);
+}
+function totalGolesJugador(eq, nom) {
+    var d = getJug();
+    if (!d[eq] || !d[eq][nom]) return 0;
+    return Object.values(d[eq][nom]).reduce(function(s,v){ return s + (parseInt(v)||0); }, 0);
+}
+
+// ── Goles equipo por jornada (suma individuales) ──
+function golesEquipoJornada(eq, j) {
+    var d    = getJug();
+    var jugs = (JSON.parse(localStorage.getItem('jugadores_'+cat+'_'+eq))||[]).filter(function(x){return !x.baja;});
+    var suma = 0;
+    jugs.forEach(function(jug) {
+        var v = d[eq] && d[eq][jug.nombre] && d[eq][jug.nombre]['j'+j];
+        suma += parseInt(v) || 0;
+    });
+    return suma;
+}
+function totalGolesEquipo(eq) {
+    var t = 0;
+    for (var i = 0; i < nJ; i++) t += golesEquipoJornada(eq, i);
+    return t;
+}
+
+// ── Calcular puntos desde rol + goles ──
+// rol[j] = [{local, visitante}, ...]
+// Busca el partido de un equipo en la jornada j y devuelve sus puntos
+function puntosEquipoJornada(eq, j) {
+    if (!rol[j]) return null;
+    var partido = null;
+    rol[j].forEach(function(p) {
+        if (!p.descanso && (p.local === eq || p.visitante === eq)) partido = p;
+    });
+    if (!partido) return null;
+
+    var d    = getJug();
+    var jugsL = (JSON.parse(localStorage.getItem('jugadores_'+cat+'_'+partido.local))||[]).filter(function(x){return !x.baja;});
+    var jugsV = (JSON.parse(localStorage.getItem('jugadores_'+cat+'_'+partido.visitante))||[]).filter(function(x){return !x.baja;});
+
+    // Verificar si hay al menos un gol registrado en esta jornada específica para cualquiera de los dos equipos
+    var hayDatosJ = false;
+    jugsL.forEach(function(jug) {
+        var v = d[partido.local] && d[partido.local][jug.nombre] && d[partido.local][jug.nombre]['j'+j];
+        if (v !== null && v !== undefined) hayDatosJ = true;
+    });
+    jugsV.forEach(function(jug) {
+        var v = d[partido.visitante] && d[partido.visitante][jug.nombre] && d[partido.visitante][jug.nombre]['j'+j];
+        if (v !== null && v !== undefined) hayDatosJ = true;
+    });
+
+    if (!hayDatosJ) return null;
+
+    var gL  = golesEquipoJornada(partido.local, j);
+    var gV  = golesEquipoJornada(partido.visitante, j);
+    var pen = getPen()[eq + '_j' + j] || false;
+
+    if (eq === partido.local) {
+        if (gL > gV) return 3;
+        if (gL < gV) return 0;
+        return pen ? 2 : 1;
+    } else {
+        if (gV > gL) return 3;
+        if (gV < gL) return 0;
+        return pen ? 2 : 1;
+    }
+}
+
+function totalPuntos(eq) {
+    var t = 0;
+    for (var i = 0; i < nJ; i++) {
+        var p = puntosEquipoJornada(eq, i);
+        if (p !== null) t += p;
+    }
+    return t;
+}
+
+function togglePen(eq, j) {
+    var d   = getPen();
+    var key = eq + '_j' + j;
+    d[key]  = !d[key];
+    savePen(d);
+    renderPuntos();
+}
+
+// ══════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════
+document.querySelectorAll('.tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var tab = this.getAttribute('data-tab');
+        document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('activo'); });
+        document.querySelectorAll('.tw').forEach(function(w){ w.classList.remove('visible'); });
+        this.classList.add('activo');
+        document.getElementById(tab).classList.add('visible');
+        if (tab === 'puntos')        renderPuntos();
+        if (tab === 'goles-equipo')  renderGolesEquipo();
+        if (tab === 'goles-jugador') renderAcordeon();
+        if (tab === 'goleadores')    renderTop5();
+    });
+});
+
+// ══════════════════════════════════════
+//  TAB 1 — PUNTOS (auto desde rol+goles)
+// ══════════════════════════════════════
+function renderPuntos() {
+    var h = '<tr><th style="width:36px">POS</th><th class="th-eq">Equipo</th>';
+    for (var i = 0; i < nJ; i++) h += '<th>J'+(i+1)+'</th>';
+    h += '<th class="th-pts">PTS</th></tr>';
+    document.getElementById('h1').innerHTML = h;
+
+    if (!equipos.length) {
+        document.getElementById('b1').innerHTML = '<tr><td colspan="'+(nJ+3)+'"><div class="vacio"><h3>Sin equipos</h3><p>Agrega equipos primero</p></div></td></tr>';
+        return;
+    }
+
+    // Ordenar por puntos descendente
+    var filas = equipos.map(function(eq){ return { eq:eq, pts:totalPuntos(eq) }; });
+    filas.sort(function(a,b){ return b.pts - a.pts; });
+
+    document.getElementById('b1').innerHTML = '';
+    filas.forEach(function(item, idx) {
+        var eq  = item.eq;
+        var tr  = document.createElement('tr');
+        var html = '<td class="td-pos">'+(idx+1)+'</td><td class="td-eq">'+eq+'</td>';
+
+        for (var i = 0; i < nJ; i++) {
+            var pts = puntosEquipoJornada(eq, i);
+            if (pts === null) {
+                html += '<td class="td-j" style="color:var(--text-muted);font-size:0.75rem;">—</td>';
+            } else if (pts === 1) {
+                // Empate — mostrar botón penal
+                var pen = getPen()[eq+'_j'+i];
+                var eqEsc = eq.replace(/'/g,"\\'");
+                html += '<td class="td-j"><div class="celda-empate">'
+                    + '<span class="emp-pts">'+(pen?2:1)+'</span>'
+                    + '<button class="btn-pen '+(pen?'ok':'')+'" onclick="togglePen(\''+eqEsc+'\','+i+')">'+(pen?'✓+1':'+1 PEN')+'</button>'
+                    + '</div></td>';
+            } else {
+                var color = pts===3 ? '#4ade80' : pts===0 ? '#f87171' : 'var(--text)';
+                html += '<td style="color:'+color+';font-weight:700">'+pts+'</td>';
+            }
+        }
+        html += '<td class="td-pts">'+totalPuntos(eq)+'</td>';
+        tr.innerHTML = html;
+        document.getElementById('b1').appendChild(tr);
+    });
+}
+
+// ══════════════════════════════════════
+//  TAB 2 — GOLES EQUIPO (solo lectura)
+// ══════════════════════════════════════
+function renderGolesEquipo() {
+    var h = '<tr><th class="th-eq">Equipo</th>';
+    for (var i = 0; i < nJ; i++) h += '<th class="th-g">J'+(i+1)+'</th>';
+    h += '<th class="th-g">Total</th></tr>';
+    document.getElementById('h2').innerHTML = h;
+
+    if (!equipos.length) {
+        document.getElementById('b2').innerHTML = '<tr><td colspan="'+(nJ+2)+'"><div class="vacio"><h3>Sin equipos</h3></div></td></tr>';
+        return;
+    }
+
+    // Ordenar por total de goles descendente
+    var filas = equipos.map(function(eq){ return { eq:eq, total:totalGolesEquipo(eq) }; });
+    filas.sort(function(a,b){ return b.total - a.total; });
+
+    document.getElementById('b2').innerHTML = '';
+    filas.forEach(function(item) {
+        var eq  = item.eq;
+        var tr  = document.createElement('tr');
+        var html = '<td class="td-eq">'+eq+'</td>';
+        for (var i = 0; i < nJ; i++) {
+            var g = golesEquipoJornada(eq, i);
+            html += '<td class="td-ro">'+(g > 0 ? g : '—')+'</td>';
+        }
+        html += '<td class="td-g">'+item.total+'</td>';
+        tr.innerHTML = html;
+        document.getElementById('b2').appendChild(tr);
+    });
+}
+
+// ══════════════════════════════════════
+//  TAB 3 — GOLES JUGADOR (acordeón)
+// ══════════════════════════════════════
+function renderAcordeon() {
+    var div = document.getElementById('tabJug');
+    if (!equipos.length) {
+        div.innerHTML = '<div class="vacio"><h3>Sin equipos</h3><p>Agrega equipos a esta categoría</p></div>';
+        return;
+    }
+    div.innerHTML = '<div class="eq-acord" id="acordeon"></div>';
+    var acord = document.getElementById('acordeon');
+
+    equipos.forEach(function(eq) {
+        var totalEq = totalGolesEquipo(eq);
+        var item = document.createElement('div');
+        item.className = 'eq-item';
+        item.id = 'acord-' + eq.replace(/\s/g,'_');
+        item.innerHTML = '<div class="eq-toggle" onclick="toggleAcord(this)">'
+            + '<div class="eq-toggle-left">'
+            + '<span class="eq-toggle-icon">👥</span>'
+            + '<span class="eq-toggle-name">' + eq + '</span>'
+            + (totalEq > 0 ? '<span class="eq-toggle-goles">⚽ ' + totalEq + ' goles</span>' : '')
+            + '</div>'
+            + '<span class="eq-toggle-arrow">▼</span>'
+            + '</div>'
+            + '<div class="eq-body" id="body-' + eq.replace(/\s/g,'_') + '"></div>';
+        acord.appendChild(item);
+    });
+}
+
+function toggleAcord(toggleEl) {
+    var item = toggleEl.parentElement;
+    var eraAbierto = item.classList.contains('abierto');
+    item.classList.toggle('abierto');
+    if (!eraAbierto) {
+        // Cargar jugadores si no están
+        var eq   = toggleEl.querySelector('.eq-toggle-name').textContent;
+        var bodyId = 'body-' + eq.replace(/\s/g,'_');
+        var body = document.getElementById(bodyId);
+        if (body && body.innerHTML === '') {
+            cargarTablaJugadores(eq, body);
+        }
+    }
+}
+
+function cargarTablaJugadores(eq, body) {
+    var jugs = (JSON.parse(localStorage.getItem('jugadores_'+cat+'_'+eq))||[]).filter(function(j){return !j.baja;});
+    if (!jugs.length) {
+        body.innerHTML = '<div class="vacio"><h3>Sin jugadores activos</h3><p>Registra jugadores en Equipos</p></div>';
+        return;
+    }
+    var jugConGoles = jugs.map(function(j){ return { j:j, total:totalGolesJugador(eq, j.nombre) }; });
+    jugConGoles.sort(function(a,b){ return b.total - a.total; });
+
+    var h = '<tr><th class="th-eq">Jugador</th>';
+    for (var i = 0; i < nJ; i++) h += '<th class="th-g">J'+(i+1)+'</th>';
+    h += '<th class="th-g">Total</th></tr>';
+
+    var rows = '';
+    jugConGoles.forEach(function(item) {
+        var nom  = item.j.nombre;
+        var nomE = nom.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        var eqE  = eq.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        rows += '<tr><td class="td-eq">'+nom+'</td>';
+        for (var i = 0; i < nJ; i++) {
+            var val = getGolesJugJornada(eq, nom, i);
+            rows += '<td class="td-j"><input type="text" inputmode="numeric" class="inp" placeholder="-"'
+                + ' value="'+(val>0?val:'')+'"'
+                + ' data-eq="'+eqE+'" data-nom="'+nomE+'" data-j="'+i+'"'
+                + ' onchange="guardarGol(this)"></td>';
+        }
+        rows += '<td class="td-g" id="tot-'+eqE.replace(/\s/g,'_')+'-'+nomE.replace(/\s/g,'_')+'">'+item.total+'</td></tr>';
+    });
+
+    body.innerHTML = '<div class="scroll-x"><table><thead>'+h+'</thead><tbody>'+rows+'</tbody></table></div>';
+    registrarFlechas(body.querySelectorAll('.inp'));
+}
+
+function guardarGol(inp) {
+    setGolesJug(inp.dataset.eq, inp.dataset.nom, parseInt(inp.dataset.j), inp.value);
+    var tr  = inp.closest('tr');
+    var tds = tr.querySelectorAll('td');
+    var eq  = inp.dataset.eq;
+    var nom = inp.dataset.nom;
+    // Actualizar total jugador en la fila
+    tds[tds.length-1].textContent = totalGolesJugador(eq, nom);
+    // Actualizar total del equipo en el header del acordeón
+    var totalEq = totalGolesEquipo(eq);
+    var acItem  = document.getElementById('acord-' + eq.replace(/\s/g,'_'));
+    if (acItem) {
+        var gSpan = acItem.querySelector('.eq-toggle-goles');
+        if (totalEq > 0) {
+            if (gSpan) { gSpan.textContent = '⚽ ' + totalEq + ' goles'; }
+            else {
+                var nameSpan = acItem.querySelector('.eq-toggle-name');
+                var newSpan  = document.createElement('span');
+                newSpan.className = 'eq-toggle-goles';
+                newSpan.textContent = '⚽ ' + totalEq + ' goles';
+                nameSpan.parentNode.insertBefore(newSpan, nameSpan.nextSibling);
+            }
+        }
+    }
+}
+
+// ══════════════════════════════════════
+//  TAB 4 — TOP 5 (solo lectura)
+// ══════════════════════════════════════
+function renderTop5() {
+    var lista = [];
+    equipos.forEach(function(eq) {
+        var jugs = (JSON.parse(localStorage.getItem('jugadores_'+cat+'_'+eq))||[]).filter(function(j){return !j.baja;});
+        jugs.forEach(function(j) {
+            var g = totalGolesJugador(eq, j.nombre);
+            if (g > 0) lista.push({ nom:j.nombre, eq:eq, goles:g });
+        });
+    });
+    lista.sort(function(a,b){ return b.goles - a.goles; });
+    var top = lista.slice(0,5);
+    var wrap = document.getElementById('topWrap');
+    if (!top.length) {
+        wrap.innerHTML = '<div class="vacio"><h3>Sin goles registrados</h3><p>Ingresa goles en Goles Jugador</p></div>';
+        return;
+    }
+    var medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+    var html = '<div class="gol-wrap-center"><div class="gol-lista">';
+    top.forEach(function(g, i) {
+        html += '<div class="gol-row r'+(i+1)+'">'
+            + '<div class="gol-pos p'+(i+1)+'">'+medals[i]+'</div>'
+            + '<div class="gol-info"><div class="gol-nom">'+g.nom+'</div><div class="gol-eq">'+g.eq+'</div></div>'
+            + '<div class="gol-right"><div class="gol-num">'+g.goles+'</div><div class="gol-lbl">Goles</div></div>'
+            + '</div>';
+    });
+    html += '</div></div>';
+    wrap.innerHTML = html;
+}
+
+// ══════════════════════════════════════
+//  NAVEGACIÓN CON FLECHAS
+// ══════════════════════════════════════
+function registrarFlechas(inputs) {
+    var arr = [];
+    inputs.forEach(function(inp) {
+        var tr    = inp.closest('tr');
+        var td    = inp.closest('td');
+        var tds   = Array.prototype.slice.call(tr.querySelectorAll('td.td-j'));
+        var col   = tds.indexOf(td);
+        var tbody = tr.closest('tbody');
+        var rows  = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        var row   = rows.indexOf(tr);
+        if (!arr[row]) arr[row] = [];
+        arr[row][col] = inp;
+
+        // Cursor al final al entrar a la celda
+        inp.addEventListener('focus', function() {
+            var len = this.value.length;
+            this.setSelectionRange(len, len);
+        });
+
+        // Solo números, no negativos
+        inp.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    });
+
+    inputs.forEach(function(inp) {
+        inp.addEventListener('keydown', function(e) {
+            var tr    = inp.closest('tr');
+            var td    = inp.closest('td');
+            var tds   = Array.prototype.slice.call(tr.querySelectorAll('td.td-j'));
+            var tbody = tr.closest('tbody');
+            var rows  = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+            var col   = tds.indexOf(td);
+            var row   = rows.indexOf(tr);
+            var pos   = inp.selectionStart;
+            var len   = inp.value.length;
+
+            if (e.key === 'ArrowRight') {
+                // Si cursor al final, salta a siguiente celda
+                if (pos === len) {
+                    e.preventDefault();
+                    if (arr[row] && arr[row][col+1]) arr[row][col+1].focus();
+                    else if (arr[row+1] && arr[row+1][0]) arr[row+1][0].focus();
+                }
+                // Si no, deja que el cursor se mueva normal dentro del número
+            } else if (e.key === 'ArrowLeft') {
+                // Si cursor al inicio, salta a celda anterior
+                if (pos === 0) {
+                    e.preventDefault();
+                    if (arr[row] && arr[row][col-1]) arr[row][col-1].focus();
+                    else if (row > 0 && arr[row-1]) {
+                        var last = arr[row-1].length - 1;
+                        if (arr[row-1][last]) arr[row-1][last].focus();
+                    }
+                }
+                // Si no, deja que el cursor se mueva normal dentro del número
+            } else if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                e.preventDefault();
+                if (arr[row+1] && arr[row+1][col]) arr[row+1][col].focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (arr[row-1] && arr[row-1][col]) arr[row-1][col].focus();
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                if (arr[row] && arr[row][col+1]) arr[row][col+1].focus();
+                else if (arr[row+1] && arr[row+1][0]) arr[row+1][0].focus();
+            }
+        });
+    });
+}
+
+// ══════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════
+async function init() {
+    try {
+        // Cargar categorías
+        const resCats = await fetch(API + '/categorias');
+        const cats = await resCats.json();
+        const catObj = cats.find(c => c.nombre === cat);
+        if (!catObj) { renderPuntos(); return; }
+        catId = catObj.id;
+
+        // Cargar equipos
+        const resEq = await fetch(API + '/equipos/' + catId);
+        const eqData = await resEq.json();
+        equipos = eqData.map(e => e.nombre);
+
+        // Cargar rol
+        const resRol = await fetch(API + '/rol/' + catId);
+        const rolData = await resRol.json();
+        if (rolData && rolData.jornadas) {
+            rol = rolData.jornadas;
+            nJ = rol.length;
+            localStorage.setItem('rol_' + cat, JSON.stringify(rol));
+            localStorage.setItem('partidos_jugados_' + cat, JSON.stringify(rolData.partidos_jugados || {}));
+        }
+
+        // Cargar jugadores de cada equipo
+        for (const eq of eqData) {
+            const resJug = await fetch(API + '/jugadores/' + eq.id);
+            const jugs = await resJug.json();
+            const jugActivos = jugs.filter(j => !j.baja).map(j => ({ nombre: j.nombre, baja: j.baja }));
+            localStorage.setItem('jugadores_' + cat + '_' + eq.nombre, JSON.stringify(jugActivos));
+        }
+
+        // Cargar goles
+        const resGoles = await fetch(API + '/goles/' + catId);
+        const golesData = await resGoles.json();
+        if (golesData && golesData.datos) {
+            localStorage.setItem(KEY_JUG, JSON.stringify(golesData.datos));
+        }
+
+        // Cargar penales
+        const resPen = await fetch(API + '/penales/' + catId);
+        const penData = await resPen.json();
+        if (penData && penData.datos) {
+            localStorage.setItem(KEY_PEN, JSON.stringify(penData.datos));
+        }
+
+    } catch(e) {
+        console.error('Error cargando datos:', e);
+        equipos = JSON.parse(localStorage.getItem('equipos_' + cat)) || [];
+        rol = JSON.parse(localStorage.getItem('rol_' + cat)) || [];
+        nJ = rol.length;
+    }
+    renderPuntos();
+}
+init();
+</script>
+</body>
+</html>

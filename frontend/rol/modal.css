@@ -1,0 +1,134 @@
+/* ========== MODAL AGREGAR EQUIPOS ========== */
+
+.overlay-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    z-index: 999;
+}
+
+.modal-agregar {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: #0d1f3c;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 0;
+    max-width: 480px;
+    width: 92%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    z-index: 1000;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+}
+
+.modal-close {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+}
+.modal-close:hover { background: rgba(239,68,68,0.15); color: #f87171; border-color: rgba(239,68,68,0.3); }
+
+/* Para compatibilidad con el h3 original que puede estar en el DOM */
+.modal-agregar h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--accent);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    padding: 1.2rem 1.4rem 0;
+    margin: 0;
+}
+
+.modal-info {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 10px;
+    margin: 1rem 1.4rem;
+    padding: 0.8rem 1rem;
+    font-size: 0.78rem;
+    color: var(--text2);
+    line-height: 1.5;
+}
+.modal-info strong { color: #fbbf24; }
+
+.equipos-disponibles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0 1.4rem 1rem;
+    max-height: none;
+    overflow-y: visible;
+}
+
+.equipo-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .2s;
+}
+.equipo-checkbox:hover {
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.3);
+}
+.equipo-checkbox input[type="checkbox"] {
+    width: 16px; height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+.equipo-checkbox label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    flex: 1;
+    color: var(--text);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+    padding: 1rem 1.4rem 1.4rem;
+    border-top: 1px solid var(--border);
+    margin-top: 0.5rem;
+}
+
+.mensaje-sin-equipos {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text2);
+    font-size: 0.85rem;
+}
+
+@media (max-width: 480px) {
+    .modal-agregar { width: 96%; }
+    .modal-buttons { flex-direction: column; }
+    .modal-buttons .btn { width: 100%; text-align: center; }
+}

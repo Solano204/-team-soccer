@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficas — Fut 7 El Jaguar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>const _t=localStorage.getItem("tema_jaguar")||"dark";document.documentElement.setAttribute("data-theme",_t);</script>
+    <style>
+        :root {
+            --bg: #0a1628;
+            --bg2: #0d1f3c;
+            --card: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.08);
+            --accent: #f59e0b;
+            --green: #22c55e;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --blue: #3b82f6;
+            --purple: #a855f7;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --radius: 16px;
+        }
+        [data-theme="light"] {
+            --bg: #f0f4f8;
+            --bg2: #e4eaf4;
+            --card: rgba(0,0,0,0.04);
+            --border: rgba(0,0,0,0.08);
+            --accent: #d97706;
+            --green: #16a34a;
+            --red: #dc2626;
+            --yellow: #d97706;
+            --blue: #2563eb;
+            --purple: #7c3aed;
+            --text: #0f172a;
+            --text2: #475569;
+            --radius: 16px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            transition: background 0.3s, color 0.3s;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(10,22,40,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .btn-volver {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            transition: all .2s;
+        }
+        .btn-volver:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+        .header-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+        }
+        .header-cat {
+            margin-left: auto;
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.3);
+            color: var(--accent);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* TABS */
+        .tabs-bar {
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.5rem;
+            display: flex;
+            gap: 0.25rem;
+            overflow-x: auto;
+        }
+        .tabs-bar::-webkit-scrollbar { height: 3px; }
+        .tabs-bar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        .tab-btn {
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text2);
+            padding: 0.9rem 1.1rem;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            transition: all .2s;
+        }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .tab-btn:hover:not(.active) { color: var(--text); }
+
+        /* MAIN */
+        .main { padding: 2rem 1.5rem; max-width: 1100px; margin: 0 auto; }
+
+        /* PANEL */
+        .panel { display: none; flex-direction: column; gap: 2rem; }
+        .panel.active { display: flex; }
+
+        /* CHART CARD */
+        .chart-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .chart-head {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .chart-icon {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .chart-head h2 { font-size: 1rem; font-weight: 700; }
+        .chart-head p { font-size: 0.8rem; color: var(--text2); margin-top: 2px; }
+        .chart-body { padding: 1.5rem; }
+        .chart-wrap { position: relative; height: 280px; }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px,1fr));
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .stat-box {
+            text-align: center;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+        }
+        .stat-val { font-family: 'Bebas Neue'; font-size: 1.6rem; }
+        .stat-lbl { font-size: 0.7rem; color: var(--text2); margin-top: 2px; }
+
+        /* SUGERENCIA (BI) */
+        .bi-section {
+            margin: 0 1.5rem 1.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .bi-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.8rem 1rem;
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+        }
+        .bi-header span { font-size: 0.8rem; font-weight: 700; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; }
+        .bi-body {
+            padding: 1rem;
+            background: rgba(245,158,11,0.04);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 0 0 12px 12px;
+        }
+        .bi-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            padding: 0.8rem 1rem;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color .2s;
+        }
+        .bi-textarea:focus { outline: none; border-color: rgba(245,158,11,0.5); }
+        .bi-textarea::placeholder { color: var(--text2); }
+        .bi-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.7rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .bi-hint { font-size: 0.72rem; color: var(--text2); }
+        .btn-save-bi {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: none;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.45rem 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+        .btn-save-bi:hover { opacity: 0.85; }
+        .bi-saved { font-size: 0.75rem; color: var(--green); display: none; }
+
+        /* FORMULARIOS MANUALES */
+        .form-manual {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .form-manual h3 { font-size: 0.85rem; font-weight: 700; color: var(--text2); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px,1fr));
+            gap: 0.7rem;
+        }
+        .input-group label { display: block; font-size: 0.7rem; color: var(--text2); margin-bottom: 0.3rem; }
+        .input-group input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.5rem 0.7rem;
+            text-align: center;
+            transition: border-color .2s;
+        }
+        .input-group input:focus { outline: none; border-color: rgba(245,158,11,0.5); }
+        .btn-guardar-datos {
+            margin-top: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 0.55rem 1.4rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+        .btn-guardar-datos:hover { opacity: 0.85; }
+        .msg-guardado { font-size: 0.78rem; color: var(--green); margin-left: 0.8rem; display: none; }
+
+        /* COMPARACIÓN BARRAS INGRESOS */
+        .comparacion-wrap { padding: 0 1.5rem 1.5rem; }
+        .barra-comp {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .barra-row { display: flex; flex-direction: column; gap: 0.3rem; }
+        .barra-label { font-size: 0.75rem; color: var(--text2); font-weight: 600; display: flex; justify-content: space-between; }
+        .barra-track { height: 22px; background: rgba(255,255,255,0.05); border-radius: 20px; overflow: hidden; }
+        .barra-fill { height: 100%; border-radius: 20px; transition: width 0.8s cubic-bezier(.4,0,.2,1); display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; }
+        .barra-fill span { font-size: 0.68rem; font-weight: 700; color: rgba(0,0,0,0.7); }
+        .alerta-box {
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .alerta-verde { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+        .alerta-roja { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
+        .alerta-amarilla { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: #fbbf24; }
+
+        /* FORM PREMIOS */
+        .form-premios {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px,1fr));
+            gap: 0.7rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+        .form-premios .input-group input { text-align: left; }
+        .form-premios .full { grid-column: 1/-1; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+        /* LOADING */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 280px;
+            color: var(--text2);
+            font-size: 0.9rem;
+            gap: 0.6rem;
+        }
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 480px) {
+            .main { padding: 1rem; }
+            .chart-wrap { height: 220px; }
+            .inputs-grid { grid-template-columns: repeat(2,1fr); }
+            .form-premios { grid-template-columns: repeat(2,1fr); }
+            .header-cat { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <button class="btn-volver" onclick="history.back()">← Volver</button>
+    <div>
+        <div class="header-title">📊 Gráficas</div>
+    </div>
+    <div class="header-cat" id="headerCat"></div>
+        <button id="btnThemeGraficas" onclick="toggleThemeGraficas()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:var(--text2);padding:0.4rem 0.7rem;border-radius:10px;cursor:pointer;font-size:0.9rem;transition:all .2s;">🌙</button>
+</header>
+
+<div class="tabs-bar">
+    <button class="tab-btn active" onclick="cambiarTab(0,this)">👥 Jugadores</button>
+    <button class="tab-btn" onclick="cambiarTab(1,this)">🏆 Equipos</button>
+    <button class="tab-btn" onclick="cambiarTab(2,this)">📅 Partidos/Día</button>
+    <button class="tab-btn" onclick="cambiarTab(3,this)">📈 Rendimiento</button>
+    <button class="tab-btn" onclick="cambiarTab(4,this)">💰 Ingresos Cat.</button>
+    <button class="tab-btn" onclick="cambiarTab(5,this)">💵 Ingresos Todo</button>
+</div>
+
+<div class="main">
+
+    <!-- ── PANEL 0: JUGADORES POR TORNEO ── -->
+    <div class="panel active" id="panel0">
+        <div class="chart-card">
+            <div class="chart-head">
+                <div class="chart-icon" style="background:rgba(59,130,246,0.15)">👥</div>
+                <div>
+                    <h2>Jugadores por Torneo</h2>
+                    <p>Cantidad de jugadores activos en cada categoría registrada</p>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-wrap"><div class="loading"><div class="spinner"></div> Cargando datos…</div></div>
+            </div>
+            <div class="stats-row" id="statsJug"></div>
+            <!-- BI -->
+            <div class="bi-section">
+                <div class="bi-header">🧠 <span>Inteligencia de Negocios · Jugadores</span></div>
+                <div class="bi-body">
+                    <textarea class="bi-textarea" id="bi0" placeholder="Escribe aquí tus observaciones y estrategias: ¿Qué categoría tiene más jugadores? ¿Dónde hay oportunidad de crecer? ¿Qué acciones tomarías para aumentar inscripciones?"></textarea>
+                    <div class="bi-footer">
+                        <span class="bi-hint">💡 Esta nota se guarda automáticamente en tu navegador</span>
+                        <div style="display:flex;align-items:center;gap:.5rem">
+                            <span class="bi-saved" id="bi0saved">✓ Guardado</span>
+                            <button class="btn-save-bi" onclick="guardarBI(0)">Guardar nota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PANEL 1: EQUIPOS POR TORNEO ── -->
+    <div class="panel" id="panel1">
+        <div class="chart-card">
+            <div class="chart-head">
+                <div class="chart-icon" style="background:rgba(168,85,247,0.15)">🏆</div>
+                <div>
+                    <h2>Equipos por Torneo</h2>
+                    <p>Cuántos equipos participan en cada categoría</p>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-wrap"><div class="loading"><div class="spinner"></div> Cargando datos…</div></div>
+            </div>
+            <div class="stats-row" id="statsEq"></div>
+            <div class="bi-section">
+                <div class="bi-header">🧠 <span>Inteligencia de Negocios · Equipos</span></div>
+                <div class="bi-body">
+                    <textarea class="bi-textarea" id="bi1" placeholder="¿Qué torneo tiene más equipos? ¿Alguno tiene muy pocos? ¿Qué estrategia usarías para atraer más equipos a los torneos con baja participación?"></textarea>
+                    <div class="bi-footer">
+                        <span class="bi-hint">💡 Esta nota se guarda automáticamente en tu navegador</span>
+                        <div style="display:flex;align-items:center;gap:.5rem">
+                            <span class="bi-saved" id="bi1saved">✓ Guardado</span>
+                            <button class="btn-save-bi" onclick="guardarBI(1)">Guardar nota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PANEL 2: PARTIDOS POR DÍA ── -->
+    <div class="panel" id="panel2">
+        <div class="chart-card">
+            <div class="chart-head">
+                <div class="chart-icon" style="background:rgba(34,197,94,0.15)">📅</div>
+                <div>
+                    <h2>Partidos por Día de la Semana</h2>
+                    <p>Promedio de partidos programados por día — datos manuales</p>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-wrap" id="wrapDia"><div class="loading"><div class="spinner"></div> Cargando datos…</div></div>
+            </div>
+            <div class="form-manual">
+                <h3>✏️ Editar datos</h3>
+                <div class="inputs-grid" id="inputsDia"></div>
+                <div style="display:flex;align-items:center;margin-top:1rem">
+                    <button class="btn-guardar-datos" onclick="guardarDias()">💾 Guardar</button>
+                    <span class="msg-guardado" id="msgDia">✓ Guardado</span>
+                </div>
+            </div>
+            <div class="bi-section">
+                <div class="bi-header">🧠 <span>Inteligencia de Negocios · Días</span></div>
+                <div class="bi-body">
+                    <textarea class="bi-textarea" id="bi2" placeholder="¿Qué días tienen más partidos? ¿Hay días con poca actividad que podrías aprovechar? ¿Cómo distribuirías mejor el calendario?"></textarea>
+                    <div class="bi-footer">
+                        <span class="bi-hint">💡 Esta nota se guarda automáticamente en tu navegador</span>
+                        <div style="display:flex;align-items:center;gap:.5rem">
+                            <span class="bi-saved" id="bi2saved">✓ Guardado</span>
+                            <button class="btn-save-bi" onclick="guardarBI(2)">Guardar nota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PANEL 3: RENDIMIENTO MENSUAL ── -->
+    <div class="panel" id="panel3">
+        <div class="chart-card">
+            <div class="chart-head">
+                <div class="chart-icon" style="background:rgba(245,158,11,0.15)">📈</div>
+                <div>
+                    <h2>Rendimiento Mensual (1–10)</h2>
+                    <p>Calificación de rendimiento del torneo por mes — datos manuales</p>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-wrap" id="wrapMes"><div class="loading"><div class="spinner"></div> Cargando datos…</div></div>
+            </div>
+            <div class="form-manual">
+                <h3>✏️ Editar calificaciones (1–10)</h3>
+                <div class="inputs-grid" id="inputsMes"></div>
+                <div style="display:flex;align-items:center;margin-top:1rem">
+                    <button class="btn-guardar-datos" onclick="guardarMeses()">💾 Guardar</button>
+                    <span class="msg-guardado" id="msgMes">✓ Guardado</span>
+                </div>
+            </div>
+            <div class="bi-section">
+                <div class="bi-header">🧠 <span>Inteligencia de Negocios · Rendimiento</span></div>
+                <div class="bi-body">
+                    <textarea class="bi-textarea" id="bi3" placeholder="¿En qué meses fue mejor el torneo? ¿Hubo meses con caídas? ¿Qué factores externos influyeron? ¿Cómo mejorar los meses bajos?"></textarea>
+                    <div class="bi-footer">
+                        <span class="bi-hint">💡 Esta nota se guarda automáticamente en tu navegador</span>
+                        <div style="display:flex;align-items:center;gap:.5rem">
+                            <span class="bi-saved" id="bi3saved">✓ Guardado</span>
+                            <button class="btn-save-bi" onclick="guardarBI(3)">Guardar nota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PANEL 4: INGRESOS VS PREMIOS (categoría actual) ── -->
+    <div class="panel" id="panel4">
+        <div class="chart-card">
+            <div class="chart-head">
+                <div class="chart-icon" style="background:rgba(239,68,68,0.15)">💰</div>
+                <div>
+                    <h2>Ingresos vs Premios — Categoría Actual</h2>
+                    <p>Dinero recaudado por credenciales vs total de premios a entregar</p>
+                </div>
+            </div>
+            <div class="comparacion-wrap" id="compActual">
+                <div class="loading"><div class="spinner"></div> Cargando…</div>
+            </div>
+            <div class="form-premios" id="formActual">
+                <!-- se rellena con JS -->
+            </div>
+            <div class="bi-section">
+                <div class="bi-header">🧠 <span>Inteligencia de Negocios · Ingresos Cat.</span></div>
+                <div class="bi-body">
+                    <textarea class="bi-textarea" id="bi4" placeholder="¿Los ingresos cubren los premios? ¿Cuántas credenciales más necesitas vender? ¿Deberías ajustar el costo de credencial o el monto de premios?"></textarea>
+                    <div class="bi-footer">
+                        <span class="bi-hint">💡 Esta nota se guarda automáticamente en tu navegador</span>
+                        <div style="display:flex;align-items:center;gap:.5rem">
+                            <span class="bi-saved" id="bi4saved">✓ Guardado</span>
+                            <button class="btn-save-bi" onclick="guardarBI(4)">Guardar nota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PANEL 5: INGRESOS TODAS LAS CATEGORÍAS ── -->
+    <div class="panel" id="panel5">
+        <div class="chart-card">
+            <div class="chart-head">
+                <div class="chart-icon" style="background:rgba(34,197,94,0.15)">💵</div>
+                <div>
+                    <h2>Ingresos vs Premios — Todas las Categorías</h2>
+                    <p>Comparativa general: barra de ingresos superpuesta con meta de premios</p>
+                </div>
+            </div>
+            <div class="chart-body">
+                <div class="chart-wrap" id="wrapTodas"><div class="loading"><div class="spinner"></div> Cargando datos…</div></div>
+            </div>
+            <div class="stats-row" id="statsTodas"></div>
+            <div class="bi-section">
+                <div class="bi-header">🧠 <span>Inteligencia de Negocios · Ingresos Globales</span></div>
+                <div class="bi-body">
+                    <textarea class="bi-textarea" id="bi5" placeholder="¿Qué categoría es más rentable? ¿Cuáles están en riesgo de no cubrir premios? ¿Cómo equilibrarías los torneos para maximizar ingresos y mantener premios atractivos?"></textarea>
+                    <div class="bi-footer">
+                        <span class="bi-hint">💡 Esta nota se guarda automáticamente en tu navegador</span>
+                        <div style="display:flex;align-items:center;gap:.5rem">
+                            <span class="bi-saved" id="bi5saved">✓ Guardado</span>
+                            <button class="btn-save-bi" onclick="guardarBI(5)">Guardar nota</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /main -->
+
+<script>
+const API = 'http://localhost:3001';
+const params = new URLSearchParams(window.location.search);
+const categoriaActual = params.get('categoria') || '';
+let categorias = [];
+let catActualObj = null;
+let cfgActual = null;
+
+// Colores para categorías
+const COLORES = [
+    'rgba(59,130,246,0.8)', 'rgba(168,85,247,0.8)', 'rgba(34,197,94,0.8)',
+    'rgba(245,158,11,0.8)', 'rgba(239,68,68,0.8)', 'rgba(20,184,166,0.8)',
+    'rgba(251,146,60,0.8)', 'rgba(236,72,153,0.8)', 'rgba(99,102,241,0.8)'
+];
+
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+let chartJug=null, chartEq=null, chartDia=null, chartMes=null, chartTodas=null;
+let dataDias={}, dataMeses={};
+
+// ── INIT ──────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+    // Cargar notas BI
+    for (let i=0; i<6; i++) {
+        const saved = localStorage.getItem(`bi_jaguar_${i}`);
+        if (saved) document.getElementById(`bi${i}`).value = saved;
+    }
+
+    if (categoriaActual) {
+        document.getElementById('headerCat').textContent = categoriaActual;
+    }
+
+    try {
+        const res = await fetch(`${API}/categorias`);
+        categorias = await res.json();
+        catActualObj = categorias.find(c => c.nombre === categoriaActual) || null;
+    } catch(e) { console.error(e); }
+
+    await Promise.all([
+        cargarGraficaJugadores(),
+        cargarGraficaEquipos(),
+    ]);
+
+    cargarDias();
+    cargarMeses();
+    cargarIngresosActual();
+    cargarIngresosTodasCats();
+});
+
+// ── TABS ──────────────────────────────────────────────
+function cambiarTab(idx, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`panel${idx}`).classList.add('active');
+    btn.classList.add('active');
+}
+
+// ── BI NOTES ─────────────────────────────────────────
+function guardarBI(idx) {
+    const val = document.getElementById(`bi${idx}`).value;
+    localStorage.setItem(`bi_jaguar_${idx}`, val);
+    const el = document.getElementById(`bi${idx}saved`);
+    el.style.display = 'inline';
+    setTimeout(() => el.style.display = 'none', 2000);
+}
+
+// ── GRÁFICA 1: JUGADORES ─────────────────────────────
+async function cargarGraficaJugadores() {
+    try {
+        const datosReales = await Promise.all(categorias.map(async cat => {
+            const eq = await fetch(`${API}/equipos/${cat.id}`);
+            const equipos = await eq.json();
+            let total = 0;
+            for (const e of equipos) {
+                const jr = await fetch(`${API}/jugadores/${e.id}`);
+                const jugs = await jr.json();
+                total += jugs.filter(j => !j.baja).length;
+            }
+            return { nombre: cat.nombre, total };
+        }));
+
+        renderBarras('panel0 .chart-wrap', datosReales, 'Jugadores', COLORES, (ch) => chartJug = ch);
+
+        // Stats
+        const statsEl = document.getElementById('statsJug');
+        statsEl.innerHTML = datosReales.map((d,i) => `
+            <div class="stat-box">
+                <div class="stat-val" style="color:${COLORES[i % COLORES.length]}">${d.total}</div>
+                <div class="stat-lbl">${d.nombre}</div>
+            </div>`).join('');
+    } catch(e) { console.error('Jugadores:', e); }
+}
+
+// ── GRÁFICA 2: EQUIPOS ───────────────────────────────
+async function cargarGraficaEquipos() {
+    try {
+        const datosEq = await Promise.all(categorias.map(async cat => {
+            const r = await fetch(`${API}/equipos/${cat.id}`);
+            const equipos = await r.json();
+            return { nombre: cat.nombre, total: equipos.length };
+        }));
+
+        renderBarras('panel1 .chart-wrap', datosEq, 'Equipos', COLORES.slice(2), (ch) => chartEq = ch);
+
+        const statsEl = document.getElementById('statsEq');
+        statsEl.innerHTML = datosEq.map((d,i) => `
+            <div class="stat-box">
+                <div class="stat-val" style="color:${COLORES[(i+2) % COLORES.length]}">${d.total}</div>
+                <div class="stat-lbl">${d.nombre}</div>
+            </div>`).join('');
+    } catch(e) { console.error('Equipos:', e); }
+}
+
+// ── HELPER: RENDERIZAR BARRAS ────────────────────────
+function renderBarras(selector, datos, label, colores, cb) {
+    // Resolve container robustly
+    const parts = selector.split(' ');
+    const panelId = parts[0]; // e.g. 'panel0'
+    const container = document.querySelector(`#${panelId} .chart-wrap`);
+
+    if (!container) { console.error('renderBarras: no container for', selector); return; }
+    if (!datos || datos.length === 0) { container.innerHTML = '<p style="padding:1rem;color:var(--text2)">Sin datos disponibles.</p>'; if(cb) cb(null); return; }
+
+    container.innerHTML = '<canvas></canvas>';
+    const ctx = container.querySelector('canvas').getContext('2d');
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: datos.map(d => d.nombre),
+            datasets: [{
+                label,
+                data: datos.map(d => d.total),
+                backgroundColor: datos.map((_,i) => colores[i % colores.length]),
+                borderColor: datos.map((_,i) => colores[i % colores.length].replace('0.8','1')),
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(10,22,40,0.95)',
+                    titleColor: '#e2e8f0',
+                    bodyColor: '#94a3b8',
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1,
+                    padding: 12,
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#94a3b8', font: { family:'Outfit', size: 11 } },
+                    grid: { color: 'rgba(255,255,255,0.04)' }
+                },
+                y: {
+                    ticks: { color: '#94a3b8', font: { family:'Outfit', size: 11 }, stepSize: 1 },
+                    grid: { color: 'rgba(255,255,255,0.06)' },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    cb(chart);
+}
+
+// ── GRÁFICA 3: PARTIDOS POR DÍA ──────────────────────
+async function cargarDias() {
+    const wrap = document.getElementById('wrapDia');
+    const inputsCont = document.getElementById('inputsDia');
+
+    // Intentar cargar de Railway
+    let diaData = {};
+    if (catActualObj) {
+        try {
+            const r = await fetch(`${API}/partidos-dia/${catActualObj.id}`);
+            const rows = await r.json();
+            rows.forEach(row => diaData[row.dia] = row.partidos);
+        } catch(e) {}
+    }
+    dataDias = diaData;
+
+    // Inputs
+    inputsCont.innerHTML = DIAS.map(d => `
+        <div class="input-group">
+            <label>${d}</label>
+            <input type="number" id="dia_${d}" min="0" max="99" value="${diaData[d] || 0}">
+        </div>`).join('');
+
+    renderLineaDias();
+}
+
+function renderLineaDias() {
+    const wrap = document.getElementById('wrapDia');
+    const vals = DIAS.map(d => {
+        const el = document.getElementById(`dia_${d}`);
+        return el ? parseFloat(el.value) || 0 : (dataDias[d] || 0);
+    });
+
+    wrap.innerHTML = '<canvas></canvas>';
+    const ctx = wrap.querySelector('canvas').getContext('2d');
+
+    chartDia = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: DIAS,
+            datasets: [{
+                label: 'Partidos',
+                data: vals,
+                borderColor: '#22c55e',
+                backgroundColor: 'rgba(34,197,94,0.08)',
+                pointBackgroundColor: '#22c55e',
+                pointRadius: 6,
+                pointHoverRadius: 9,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2.5,
+            }]
+        },
+        options: chartLineOptions('Partidos por día')
+    });
+}
+
+async function guardarDias() {
+    if (!catActualObj) { alert('No hay categoría seleccionada'); return; }
+    const promises = DIAS.map(d => {
+        const val = parseInt(document.getElementById(`dia_${d}`).value) || 0;
+        return fetch(`${API}/partidos-dia`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ categoria_id: catActualObj.id, dia: d, partidos: val })
+        });
+    });
+    await Promise.all(promises);
+    renderLineaDias();
+    const msg = document.getElementById('msgDia');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 2000);
+}
+
+// ── GRÁFICA 4: RENDIMIENTO MENSUAL ───────────────────
+async function cargarMeses() {
+    const inputsCont = document.getElementById('inputsMes');
+    let mesData = {};
+
+    if (catActualObj) {
+        try {
+            const r = await fetch(`${API}/rendimiento/${catActualObj.id}`);
+            const rows = await r.json();
+            rows.forEach(row => mesData[row.mes] = row.valor);
+        } catch(e) {}
+    }
+    dataMeses = mesData;
+
+    inputsCont.innerHTML = MESES.map((m,i) => `
+        <div class="input-group">
+            <label>${m}</label>
+            <input type="number" id="mes_${i+1}" min="0" max="10" step="0.1" value="${mesData[i+1] || 0}">
+        </div>`).join('');
+
+    renderLineaMeses();
+}
+
+function renderLineaMeses() {
+    const wrap = document.getElementById('wrapMes');
+    const vals = MESES.map((_,i) => {
+        const el = document.getElementById(`mes_${i+1}`);
+        return el ? parseFloat(el.value) || 0 : (dataMeses[i+1] || 0);
+    });
+
+    wrap.innerHTML = '<canvas></canvas>';
+    const ctx = wrap.querySelector('canvas').getContext('2d');
+
+    chartMes = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: MESES,
+            datasets: [{
+                label: 'Rendimiento',
+                data: vals,
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245,158,11,0.08)',
+                pointBackgroundColor: vals.map(v => v >= 8 ? '#22c55e' : v >= 5 ? '#f59e0b' : '#ef4444'),
+                pointRadius: 7,
+                pointHoverRadius: 10,
+                fill: true,
+                tension: 0.4,
+                borderWidth: 2.5,
+            }]
+        },
+        options: {
+            ...chartLineOptions('Rendimiento (1–10)'),
+            scales: {
+                ...chartLineOptions('').scales,
+                y: {
+                    min: 0, max: 10,
+                    ticks: { color: '#94a3b8', font: { family:'Outfit', size:11 }, stepSize: 2 },
+                    grid: { color: 'rgba(255,255,255,0.06)' }
+                }
+            }
+        }
+    });
+}
+
+async function guardarMeses() {
+    if (!catActualObj) { alert('No hay categoría seleccionada'); return; }
+    const promises = MESES.map((_,i) => {
+        const val = parseFloat(document.getElementById(`mes_${i+1}`).value) || 0;
+        return fetch(`${API}/rendimiento`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ categoria_id: catActualObj.id, mes: i+1, valor: val })
+        });
+    });
+    await Promise.all(promises);
+    renderLineaMeses();
+    const msg = document.getElementById('msgMes');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 2000);
+}
+
+function chartLineOptions(label) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: 'rgba(10,22,40,0.95)',
+                titleColor: '#e2e8f0',
+                bodyColor: '#94a3b8',
+                borderColor: 'rgba(255,255,255,0.1)',
+                borderWidth: 1,
+                padding: 12,
+            }
+        },
+        scales: {
+            x: { ticks: { color: '#94a3b8', font: { family:'Outfit', size:10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: '#94a3b8', font: { family:'Outfit', size:11 }, stepSize:1 }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true }
+        }
+    };
+}
+
+// ── GRÁFICA 5: INGRESOS CATEGORÍA ACTUAL ─────────────
+async function cargarIngresosActual() {
+    const cont = document.getElementById('compActual');
+    const form = document.getElementById('formActual');
+
+    if (!catActualObj) {
+        cont.innerHTML = '<p style="padding:1rem;color:var(--text2)">Selecciona una categoría desde el menú para ver esta gráfica.</p>';
+        return;
+    }
+
+    // Cargar config
+    try {
+        const r = await fetch(`${API}/config/${catActualObj.id}`);
+        cfgActual = await r.json();
+    } catch(e) { cfgActual = null; }
+
+    // Cargar jugadores para calcular ingresos
+    let totalJug = 0;
+    try {
+        const eqR = await fetch(`${API}/equipos/${catActualObj.id}`);
+        const equipos = await eqR.json();
+        for (const eq of equipos) {
+            const jR = await fetch(`${API}/jugadores/${eq.id}`);
+            const jugs = await jR.json();
+            totalJug += jugs.filter(j => !j.baja).length;
+        }
+    } catch(e) {}
+
+    form.innerHTML = `
+        <div class="input-group">
+            <label>Costo credencial ($)</label>
+            <input type="number" id="costoCred" value="${cfgActual?.costo_credencial || 0}" min="0">
+        </div>
+        <div class="input-group">
+            <label>Premio 1er lugar ($)</label>
+            <input type="number" id="premio1" value="${cfgActual?.premio_1 || 0}" min="0">
+        </div>
+        <div class="input-group">
+            <label>Premio 2do lugar ($)</label>
+            <input type="number" id="premio2" value="${cfgActual?.premio_2 || 0}" min="0">
+        </div>
+        <div class="input-group">
+            <label>Premio 3er lugar ($)</label>
+            <input type="number" id="premio3" value="${cfgActual?.premio_3 || 0}" min="0">
+        </div>
+        <div class="input-group">
+            <label>Premio 4to lugar ($)</label>
+            <input type="number" id="premio4" value="${cfgActual?.premio_4 || 0}" min="0">
+        </div>
+        <div class="input-group" style="grid-column:1/-1;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+            <button class="btn-guardar-datos" onclick="guardarYActualizarActual(${totalJug})">💾 Guardar y actualizar</button>
+            <span class="msg-guardado" id="msgCfg">✓ Guardado</span>
+        </div>`;
+
+    mostrarComparacionActual(totalJug);
+}
+
+function mostrarComparacionActual(totalJug) {
+    const cont = document.getElementById('compActual');
+    const costo = parseFloat(document.getElementById('costoCred')?.value) || cfgActual?.costo_credencial || 0;
+    const p1 = parseFloat(document.getElementById('premio1')?.value) || cfgActual?.premio_1 || 0;
+    const p2 = parseFloat(document.getElementById('premio2')?.value) || cfgActual?.premio_2 || 0;
+    const p3 = parseFloat(document.getElementById('premio3')?.value) || cfgActual?.premio_3 || 0;
+    const p4 = parseFloat(document.getElementById('premio4')?.value) || cfgActual?.premio_4 || 0;
+
+    const recaudado = totalJug * costo;
+    const premios = p1 + p2 + p3 + p4;
+    const porcentaje = premios > 0 ? Math.min((recaudado / premios) * 100, 100) : 0;
+    const diferencia = recaudado - premios;
+
+    let alerta = '';
+    let colorBarra = '';
+    if (porcentaje >= 100) {
+        alerta = `<div class="alerta-box alerta-verde">✅ El dinero recaudado (<strong>$${fmt(recaudado)}</strong>) es suficiente para cubrir los premios ($${fmt(premios)}). Superávit: <strong>$${fmt(diferencia)}</strong></div>`;
+        colorBarra = '#22c55e';
+    } else if (porcentaje >= 75) {
+        alerta = `<div class="alerta-box alerta-amarilla">⚠️ Vas bien pero aún te faltan <strong>$${fmt(Math.abs(diferencia))}</strong> para cubrir los premios. Recaudado: <strong>$${fmt(recaudado)}</strong> / Meta: $${fmt(premios)}</div>`;
+        colorBarra = '#f59e0b';
+    } else {
+        alerta = `<div class="alerta-box alerta-roja">🚨 El dinero recaudado (<strong>$${fmt(recaudado)}</strong>) no cubre los premios ($${fmt(premios)}). Faltan: <strong>$${fmt(Math.abs(diferencia))}</strong></div>`;
+        colorBarra = '#ef4444';
+    }
+
+    cont.innerHTML = `
+        ${alerta}
+        <div class="barra-comp">
+            <div class="barra-row">
+                <div class="barra-label"><span>💵 Recaudado por credenciales</span><strong>$${fmt(recaudado)}</strong></div>
+                <div class="barra-track">
+                    <div class="barra-fill" style="width:${porcentaje}%;background:${colorBarra}">
+                        <span>${Math.round(porcentaje)}%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="barra-row">
+                <div class="barra-label"><span>🏆 Total premios</span><strong>$${fmt(premios)}</strong></div>
+                <div class="barra-track">
+                    <div class="barra-fill" style="width:100%;background:rgba(148,163,184,0.3)">
+                        <span style="color:var(--text2)">meta</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--text2);margin-top:.5rem">
+            📊 ${totalJug} jugadores × $${fmt(costo)} = $${fmt(recaudado)} recaudados
+        </div>`;
+}
+
+async function guardarYActualizarActual(totalJug) {
+    if (!catActualObj) return;
+    const body = {
+        categoria_id: catActualObj.id,
+        costo_credencial: parseFloat(document.getElementById('costoCred').value) || 0,
+        premio_1: parseFloat(document.getElementById('premio1').value) || 0,
+        premio_2: parseFloat(document.getElementById('premio2').value) || 0,
+        premio_3: parseFloat(document.getElementById('premio3').value) || 0,
+        premio_4: parseFloat(document.getElementById('premio4').value) || 0,
+    };
+    try {
+        const r = await fetch(`${API}/config`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(body)
+        });
+        cfgActual = await r.json();
+        mostrarComparacionActual(totalJug);
+        const msg = document.getElementById('msgCfg');
+        msg.style.display = 'inline';
+        setTimeout(() => msg.style.display = 'none', 2000);
+    } catch(e) { alert('Error al guardar'); }
+}
+
+// ── GRÁFICA 6: TODAS LAS CATEGORÍAS ──────────────────
+async function cargarIngresosTodasCats() {
+    const wrap = document.getElementById('wrapTodas');
+    const stats = document.getElementById('statsTodas');
+
+    try {
+        const datos = await Promise.all(categorias.map(async (cat, idx) => {
+            // jugadores
+            let totalJug = 0;
+            const eqR = await fetch(`${API}/equipos/${cat.id}`);
+            const equipos = await eqR.json();
+            for (const eq of equipos) {
+                const jR = await fetch(`${API}/jugadores/${eq.id}`);
+                const jugs = await jR.json();
+                totalJug += jugs.filter(j => !j.baja).length;
+            }
+            // config
+            let cfg = null;
+            try {
+                const cR = await fetch(`${API}/config/${cat.id}`);
+                if (cR.ok) cfg = await cR.json();
+            } catch(e) { cfg = null; }
+
+            const costo = parseFloat(cfg?.costo_credencial || 0);
+            const premios = parseFloat(cfg?.premio_1||0)+parseFloat(cfg?.premio_2||0)+parseFloat(cfg?.premio_3||0)+parseFloat(cfg?.premio_4||0);
+            const recaudado = totalJug * costo;
+            return { nombre: cat.nombre, recaudado, premios, jugadores: totalJug };
+        }));
+
+        // Chart barras comparativas
+        wrap.innerHTML = '<canvas></canvas>';
+        const ctx = wrap.querySelector('canvas').getContext('2d');
+
+        chartTodas = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: datos.map(d => d.nombre),
+                datasets: [
+    {
+        label: 'Recaudado',
+        data: datos.map(d => d.recaudado),
+        backgroundColor: datos.map(d => {
+            const pct = d.premios > 0 ? d.recaudado / d.premios : 1;
+            return pct >= 1 ? 'rgba(34,197,94,0.85)' : pct >= 0.75 ? 'rgba(245,158,11,0.85)' : 'rgba(239,68,68,0.85)';
+        }),
+        borderRadius: 8,
+        borderSkipped: false,
+        categoryPercentage: 0.7,
+        barPercentage: 0.5,
+    },
+    {
+        label: 'Meta premios',
+        data: datos.map(d => d.premios),
+        backgroundColor: 'rgba(148,163,184,0.25)',
+        borderColor: 'rgba(148,163,184,0.6)',
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+        categoryPercentage: 0.7,
+        barPercentage: 0.5,
+    }
+]
+            },
+            options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    grouped: true,
+    plugins: {
+        legend: {
+            display: true,
+            labels: { color: '#94a3b8', font: { family:'Outfit', size:11 }, boxWidth: 14 }
+        },
+        tooltip: {
+            backgroundColor: 'rgba(10,22,40,0.95)',
+            titleColor: '#e2e8f0',
+            bodyColor: '#94a3b8',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: { label: ctx => ` $${fmt(ctx.raw)}` }
+        }
+    },
+    scales: {
+        x: { ticks: { color: '#94a3b8', font: { family:'Outfit', size:11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#94a3b8', font: { family:'Outfit', size:11 }, callback: v => '$'+fmt(v) }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true }
+    }
+}
+        });
+
+        // Stats
+        stats.innerHTML = datos.map(d => {
+            const pct = d.premios > 0 ? d.recaudado / d.premios : 1;
+            const color = pct >= 1 ? '#22c55e' : pct >= 0.75 ? '#f59e0b' : '#ef4444';
+            const icon = pct >= 1 ? '✅' : pct >= 0.75 ? '⚠️' : '🚨';
+            return `<div class="stat-box">
+                <div style="font-size:1.1rem">${icon}</div>
+                <div class="stat-val" style="color:${color};font-size:1rem">$${fmt(d.recaudado)}</div>
+                <div class="stat-lbl">${d.nombre}</div>
+            </div>`;
+        }).join('');
+
+    } catch(e) { console.error('Todas:', e); wrap.innerHTML = '<p style="padding:1rem;color:var(--text2)">Error al cargar datos.</p>'; }
+}
+
+function fmt(n) {
+    return Number(n).toLocaleString('es-MX', {minimumFractionDigits:0, maximumFractionDigits:2});
+}
+
+function toggleThemeGraficas() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') !== 'light';
+    const newTheme = isDark ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('tema_jaguar', newTheme);
+    const btn = document.getElementById('btnThemeGraficas');
+    if (btn) btn.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+}
+
+// Apply correct icon on load
+(function() {
+    const t = localStorage.getItem('tema_jaguar') || 'dark';
+    const btn = document.getElementById('btnThemeGraficas');
+    if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+</script>
+</body>
+</html>

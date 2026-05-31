@@ -1,0 +1,146 @@
+/* =============================================
+   HORARIOS PARTIDOS · FUT 7 EL JAGUAR
+   ============================================= */
+
+/* ── PARTIDO EN AGENDA ── */
+.partido-asignado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    max-height: 100%;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-weight: 700;
+    line-height: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-size: 0.55rem;
+    border-left: 2px solid rgba(0,0,0,0.15);
+}
+
+.partido-asignado span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    font-size: 0.55rem;
+    line-height: 1;
+    color: rgba(0,0,0,0.75);
+    font-weight: 700;
+}
+
+.cat-label { display: none; }
+
+/* ── PARTIDO EN PANEL (arrastrable) ── */
+.partido-mini {
+    background: var(--bg-card-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 0.45rem 0.7rem;
+    margin-bottom: 0.35rem;
+    border-radius: 8px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: grab;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-primary);
+}
+
+.partido-mini:hover {
+    background: var(--bg-card);
+    border-color: var(--accent);
+    transform: translateX(3px);
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.partido-mini:active { cursor: grabbing; }
+.partido-mini.dragging { opacity: 0.4; }
+
+.partido-mini.descanso {
+    border-left-color: var(--gold);
+    color: var(--text-second);
+}
+
+/* Jugado / ya asignado */
+.partido-jugado-bloqueado {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    border-left-color: rgba(255,255,255,0.1) !important;
+}
+
+.partido-ya-asignado {
+    border-left-color: var(--green) !important;
+    opacity: 0.7;
+}
+
+.drag-icon {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.partido-texto {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vs-mini {
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    font-size: 0.52rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+/* ── PARTIDO PROGRAMADO / YA ASIGNADO EN AGENDA ── */
+.partido-programado {
+    border-left: 2px solid #0288d1 !important;
+    opacity: 0.85;
+    cursor: not-allowed;
+}
+
+.partido-ya-asignado-agenda {
+    border-left: 2px solid var(--green) !important;
+    opacity: 0.85;
+    cursor: not-allowed;
+}
+
+/* ── RESTRICCIONES DE ALTURA ── */
+.partido-asignado,
+.partido-asignado *,
+.evento-personalizado,
+.evento-personalizado * {
+    box-sizing: border-box !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+}
+
+.partido-asignado span {
+    display: block;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Forzar padding cero */
+table.agenda-table td.celda-horario,
+table.agenda-table tbody tr td.celda-horario,
+.celda-horario.ocupada,
+.celda-horario.celda-movible,
+.celda-horario.celda-evento {
+    padding: 0 !important;
+}

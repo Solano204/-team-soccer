@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jugadores — Fut 7 El Jaguar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="jugadores.css">
+    <script>
+        const t = localStorage.getItem('tema_jaguar') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+    </script>
+</head>
+<script>
+  if (!sessionStorage.getItem('sesion_jaguar')) {
+    location.replace('../login/index.html');
+  }
+</script>
+<body>
+
+<!-- FONDO -->
+<div class="stadium-bg" aria-hidden="true">
+    <svg class="pitch-lines" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect x="60" y="40" width="1080" height="520" fill="none" stroke="currentColor" stroke-width="2.5" stroke-opacity="0.10"/>
+        <line x1="600" y1="40" x2="600" y2="560" stroke="currentColor" stroke-width="2" stroke-opacity="0.10"/>
+        <circle cx="600" cy="300" r="90" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity="0.10"/>
+    </svg>
+    <div class="particles" id="particles"></div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="header-left">
+        <button class="btn-volver" id="btnVolver">← Volver</button>
+    </div>
+    <div class="header-center">
+        <div class="team-emblem" id="teamEmblem"></div>
+        <div>
+            <div class="header-equipo" id="tituloEquipo">Equipo</div>
+            <div class="header-cat" id="headerCat">Categoría</div>
+        </div>
+    </div>
+    <div class="header-right" style="display:flex;align-items:center;gap:.8rem;">
+    <button class="btn-tema" id="btnTema" title="Cambiar tema" onclick="toggleTema()">🌙</button>
+    <div class="header-stats">
+            <div class="hstat green">
+                <span class="hstat-num" id="statActivos">0</span>
+                <span class="hstat-lbl">Activos</span>
+            </div>
+            <div class="hstat-sep"></div>
+            <div class="hstat red">
+                <span class="hstat-num" id="statBaja">0</span>
+                <span class="hstat-lbl">Baja</span>
+            </div>
+            <div class="hstat-sep"></div>
+            <div class="hstat gold">
+                <span class="hstat-num" id="statRefuerzos">0</span>
+                <span class="hstat-lbl">Refuerzos</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- BANNER -->
+<div class="team-banner">
+    <div class="banner-left">
+        <div class="banner-jersey" id="bannerJersey"></div>
+        <div>
+            <div class="banner-nombre" id="bannerNombre">Equipo</div>
+            <div class="banner-cat" id="bannerCat">Categoría</div>
+        </div>
+    </div>
+    <div class="banner-right">
+        <div class="banner-stat">
+            <div class="banner-stat-num" id="bannerTotal">0</div>
+            <div class="banner-stat-lbl">Jugadores</div>
+        </div>
+        <div class="banner-divider"></div>
+        <button class="btn-banner btn-diseno" onclick="irADiseno()">🎨 Diseñar Credencial</button>
+        <button class="btn-banner btn-qr"     onclick="generarQREquipo()">📲 QR</button>
+        <button class="btn-banner btn-print"  onclick="abrirPanelImpresion()">🖨️ Imprimir</button>
+        <button class="btn-banner btn-nuevo"  onclick="abrirModalNuevo()">+ Nuevo Jugador</button>
+    </div>
+</div>
+
+<!-- LISTA -->
+<main class="container">
+    <div class="tarjetas-container" id="listaJugadores"></div>
+    <div id="estadoVacio" class="estado-vacio" style="display:none;">
+        <div style="font-size:4rem;">🪪</div>
+        <div class="vacio-title">Plantilla vacía</div>
+        <div class="vacio-sub">Agrega el primer jugador para comenzar</div>
+    </div>
+</main>
+
+<!-- ══════════════════════════════════════════════
+     MODAL NUEVO / EDITAR JUGADOR
+══════════════════════════════════════════════ -->
+<div id="overlayModal" class="overlay-modal"></div>
+
+<div id="modalJugador" class="modal-jugador">
+    <div class="mj-header">
+        <div class="mj-title" id="modalJugadorTitulo">Nuevo Jugador</div>
+        <button class="mj-close" onclick="cerrarModal()">✕</button>
+    </div>
+
+    <div class="mj-body">
+        <!-- Preview credencial -->
+        <div class="mj-preview-wrap">
+            <div class="mj-preview-label">Vista previa de la credencial</div>
+            <div class="mj-preview-cred" id="modalCredPreview"></div>
+            <button class="mj-foto-btn" onclick="subirFotoModal()">📷 Subir foto del jugador</button>
+        </div>
+
+        <!-- Campos -->
+        <div class="mj-fields">
+            <div class="mj-field">
+                <label class="mj-lbl">Nombre completo</label>
+                <input type="text" id="mNombre" class="mj-input" placeholder="Nombre del jugador">
+                <div class="mj-err" id="mErrNombre"></div>
+            </div>
+            <div class="mj-field">
+                <label class="mj-lbl">Dorsal / Número</label>
+                <input type="number" id="mNumero" class="mj-input" placeholder="Ej: 10" min="0">
+                <div class="mj-err" id="mErrNumero"></div>
+            </div>
+            <div class="mj-field">
+                <label class="mj-lbl">Fecha de nacimiento</label>
+                <input type="date" id="mFecha" class="mj-input">
+                <div class="mj-err" id="mErrFecha"></div>
+            </div>
+            <div class="mj-actions">
+                <button class="mj-btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                <button class="mj-btn-save"   onclick="guardarDesdeModal()">✓ Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal eliminar -->
+<div id="modalEliminar" class="modal-simple modal-warn">
+    <div class="modal-icon">🗑️</div>
+    <h3 class="modal-title">Eliminar Jugador</h3>
+    <p class="modal-text">¿Eliminar a "<span id="nombreEliminar" style="font-weight:700;color:var(--red)"></span>"?</p>
+    <div class="modal-actions">
+        <button class="btn-cancel-modal" onclick="ocultarModalEliminar()">Cancelar</button>
+        <button class="btn-del-modal"    onclick="confirmarEliminar()">Eliminar</button>
+    </div>
+</div>
+
+<!-- Modal info refuerzo -->
+<div id="modalRefuerzo" class="modal-simple modal-warn">
+    <div class="modal-icon">⚡</div>
+    <h3 class="modal-title" id="tituloModalRefuerzo">Límite de Refuerzos</h3>
+    <p class="modal-text" id="textoModalRefuerzo"></p>
+    <div class="modal-actions">
+        <button class="btn-save-modal" onclick="ocultarModalRefuerzo()">Entendido</button>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PANEL IMPRESIÓN
+══════════════════════════════════════════════ -->
+<div id="panelImpresion" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);">
+    <div style="position:absolute;right:0;top:0;bottom:0;width:min(420px,100%);background:#0d1b2e;border-left:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;">
+        <div style="padding:1.2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;">
+            <div>
+                <div style="font-family:'Bebas Neue',cursive;font-size:1.3rem;letter-spacing:3px;color:#fff;">🖨️ Imprimir Credenciales</div>
+                <div style="font-size:.7rem;color:rgba(255,255,255,.4);margin-top:2px;" id="printSubtitle"></div>
+            </div>
+            <button onclick="cerrarPanelImpresion()" style="background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);width:32px;height:32px;border-radius:8px;cursor:pointer;">✕</button>
+        </div>
+        <div style="padding:.8rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;gap:8px;align-items:center;">
+            <button onclick="selectAllPrint()" id="btnSelectAllPrint" style="flex:1;padding:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);border-radius:8px;font-family:'Outfit',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;">☐ Seleccionar todos</button>
+            <div style="font-size:.75rem;color:#4f8ef7;font-weight:700;" id="countPrint">0 sel.</div>
+        </div>
+        <div id="listaPrint" style="flex:1;overflow-y:auto;padding:.8rem 1.5rem;display:flex;flex-direction:column;gap:8px;"></div>
+        <div style="padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:10px;">
+            <div style="padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:10px;flex-wrap:wrap;">
+    <button onclick="cerrarPanelImpresion()" style="flex:1;min-width:80px;padding:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.6);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;">Cancelar</button>
+    <button onclick="imprimirIndividual()" id="btnImpIndividual" disabled style="flex:1;min-width:100px;padding:10px;background:linear-gradient(135deg,#c8a84b,#a07828);border:none;color:#000;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;opacity:.4;">🖨️ Individual</button>
+    <button onclick="verCredenciales()" id="btnVerCred" disabled style="flex:2;min-width:120px;padding:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border:none;color:#fff;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;opacity:.4;">Ver e Imprimir →</button>
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal preview credenciales -->
+<div id="modalCredenciales" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);overflow-y:auto;">
+    <div style="max-width:900px;margin:0 auto;padding:1.5rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+            <div>
+                <div style="font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:3px;color:#fff;">Credenciales listas</div>
+                <div style="font-size:.75rem;color:rgba(255,255,255,.4);" id="credSubtitle"></div>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button onclick="cerrarModalCredenciales()" style="padding:8px 16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.8rem;cursor:pointer;">← Volver</button>
+                <button onclick="imprimirAhora()" style="padding:8px 20px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border:none;color:#fff;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;">🖨️ Imprimir</button>
+            </div>
+        </div>
+        <div id="gridCredenciales" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem;"></div>
+    </div>
+</div>
+
+<!-- Modal QR -->
+<div id="overlayQREquipo" class="overlay-modal"></div>
+<div id="modalQREquipo" class="modal-simple" style="max-width:380px;">
+    <div class="modal-icon">📲</div>
+    <h3 class="modal-title">QR del Equipo</h3>
+    <p class="modal-text" id="qrEquipoText"></p>
+    <div id="qrEquipoCanvas" style="background:#fff;padding:12px;border-radius:12px;width:fit-content;margin:12px auto;box-shadow:0 4px 20px rgba(0,0,0,.3);"></div>
+    <div class="modal-actions">
+        <button class="btn-cancel-modal" onclick="cerrarQREquipo()">Cerrar</button>
+        <button class="btn-save-modal"   onclick="imprimirQREquipo()">🖨️ Imprimir QR</button>
+    </div>
+</div>
+
+<!-- Zonas de impresión -->
+<div id="zonaPrint"            style="display:none;"></div>
+<div id="zonaPrintIndividual"  style="display:none;"></div>
+<div id="zonaPrintQREquipo"    style="display:none;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="jugadores.js"></script>
+</body>
+</html>

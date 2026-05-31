@@ -1,0 +1,44 @@
+/* ========== ESTADÍSTICAS ========== */
+
+.info-estadisticas {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+}
+
+.stat-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.7rem 0.5rem;
+    text-align: center;
+}
+
+.stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+    font-weight: 600;
+}
+
+@media (max-width: 480px) {
+    .stats-grid { grid-template-columns: repeat(2,1fr); }
+    .stat-value { font-size: 1.5rem; }
+}

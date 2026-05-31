@@ -1,0 +1,347 @@
+/* =============================================
+   HORARIOS COMPONENTES · FUT 7 EL JAGUAR
+   ============================================= */
+
+/* ── BOTONES HEADER ── */
+.btn-volver {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-second);
+    padding: 0.55rem 1.1rem; border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; letter-spacing: 1px;
+    transition: all 0.2s;
+}
+.btn-volver:hover {
+    border-color: var(--accent); color: var(--text-primary);
+    background: var(--bg-card-2);
+}
+
+.btn-limpiar {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.25);
+    color: var(--red);
+    padding: 0.55rem 1.1rem; border-radius: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; letter-spacing: 1px;
+    transition: all 0.2s;
+}
+.btn-limpiar:hover {
+    background: rgba(239,68,68,0.2);
+    border-color: rgba(239,68,68,0.5);
+}
+
+/* ── NAVEGACIÓN SEMANA ── */
+.navegacion-semana {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+
+.semana-info-wrap { text-align: center; }
+
+.semana-label {
+    font-size: 0.58rem; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 1px;
+}
+
+.semana-info {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.1rem; letter-spacing: 2px;
+    color: var(--text-primary);
+}
+
+.btn-nav {
+    background: var(--bg-card-2);
+    border: 1px solid var(--border);
+    color: var(--text-second);
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+.btn-nav:hover {
+    border-color: var(--accent); color: var(--text-primary);
+    background: var(--accent-dim);
+}
+
+/* ── AGENDA ── */
+.agenda-container {
+    flex: 1; display: flex; flex-direction: column;
+    overflow: hidden; min-height: 0;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--agenda-bg);
+}
+
+.agenda-table {
+    width: 100%; height: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    display: flex; flex-direction: column;
+}
+
+.agenda-table thead {
+    display: block; width: 100%; flex-shrink: 0;
+}
+
+.agenda-table tbody {
+    display: block; flex: 1;
+    overflow-y: auto; overflow-x: hidden;
+}
+
+.agenda-table thead tr,
+.agenda-table tbody tr {
+    display: table; width: 100%; table-layout: fixed;
+}
+
+/* TH */
+.agenda-table th {
+    background: var(--th-bg);
+    color: var(--text-second);
+    padding: 0.5rem 0.2rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--agenda-border);
+    height: 36px; text-align: center;
+}
+.agenda-table th:last-child { border-right: none; }
+
+/* HORA HEADER */
+.hora-cell {
+    background: var(--hora-bg) !important;
+    color: var(--accent) !important;
+    font-family: 'Bebas Neue', cursive !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+/* TD */
+.agenda-table td {
+    border-right: 1px solid var(--agenda-border);
+    border-bottom: 1px solid var(--agenda-border);
+    padding: 0 !important;
+    text-align: center;
+    position: relative;
+    font-size: 0.65rem;
+    overflow: hidden;
+    vertical-align: middle;
+    height: 100%;
+    box-sizing: border-box;
+    line-height: 1;
+}
+.agenda-table td:last-child { border-right: none; }
+
+/* FILAS */
+.agenda-table tbody tr {
+    height: 33.5px; min-height: 33.5px; max-height: 33.5px;
+}
+.agenda-table tbody tr:hover { background: var(--row-hover); }
+
+.agenda-table tbody tr td {
+    height: 33.5px !important;
+    max-height: 33.5px !important;
+    min-height: 33.5px !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+}
+
+/* TD HORA */
+td.hora-cell {
+    background: var(--hora-bg) !important;
+    color: var(--accent) !important;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+    border-right: 1px solid var(--border) !important;
+    position: sticky; left: 0; z-index: 5;
+}
+
+/* CELDA HORARIO */
+.celda-horario {
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s;
+    padding: 0 !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    overflow: hidden !important;
+}
+
+.celda-horario:hover:not(.ocupada):not(.oculta) {
+    background: var(--cell-hover);
+    outline: 1px dashed var(--cell-hover-border);
+    outline-offset: -1px;
+}
+
+.celda-horario:hover:not(.ocupada):not(.oculta)::after {
+    content: '✏️';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.75rem;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.celda-horario.ocupada       { cursor: default; }
+.celda-horario.ocupada-otra  { background: rgba(255,255,255,0.03); }
+.celda-horario.oculta        { background: transparent; pointer-events: none; }
+
+/* DRAG */
+.celda-movible { cursor: move; }
+
+.dragging-celda-activa {
+    opacity: 0.4;
+    outline: 2px dashed var(--accent) !important;
+    outline-offset: -2px;
+    background: var(--accent-dim) !important;
+}
+
+.icono-mover {
+    position: absolute; bottom: 2px; right: 2px;
+    font-size: 0.65rem; color: var(--text-muted);
+    opacity: 0; transition: opacity 0.2s;
+}
+.celda-movible:hover .icono-mover { opacity: 1; }
+
+/* BTN ELIMINAR */
+.btn-eliminar {
+    position: absolute; top: 2px; right: 2px;
+    background: rgba(239,68,68,0.8);
+    color: #fff; border: none;
+    border-radius: 4px;
+    width: 14px; height: 14px;
+    cursor: pointer; font-size: 0.6rem;
+    z-index: 20; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.15s; opacity: 0;
+    line-height: 1; padding: 0;
+}
+.celda-horario:hover .btn-eliminar { opacity: 1; }
+.btn-eliminar:hover { background: var(--red); transform: scale(1.15); }
+
+/* EVENTO PERSONALIZADO */
+.celda-evento { background: var(--gold-dim) !important; }
+
+.evento-personalizado {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; gap: 0.05rem;
+    padding: 0.1rem;
+    background: var(--gold-dim);
+    border-left: 2px solid var(--gold);
+    border-radius: 2px;
+}
+.evento-personalizado span { line-height: 1; }
+
+/* ── CATEGORÍAS PANEL IZQ ── */
+.categorias-lista { flex: 1; }
+
+.categoria-item {
+    border-bottom: 1px solid var(--border);
+}
+
+.categoria-header {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    background: var(--bg-card);
+}
+.categoria-header:hover { background: var(--bg-card-2); }
+
+.btn-vista-categoria {
+    background: var(--green-dim);
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 8px;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 0.9rem;
+    transition: all 0.2s; flex-shrink: 0;
+}
+.btn-vista-categoria:hover { transform: scale(1.1); }
+.btn-vista-categoria.gris {
+    background: rgba(255,255,255,0.05);
+    border-color: var(--border);
+}
+.btn-vista-categoria.oculto {
+    background: var(--red-dim, rgba(239,68,68,0.12));
+    border-color: rgba(239,68,68,0.3);
+}
+
+.categoria-nombre {
+    flex: 1;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--text-primary); letter-spacing: 0.5px;
+}
+
+.categoria-controles { display: flex; align-items: center; gap: 0.5rem; }
+
+.btn-color-categoria {
+    background: var(--bg-card-2); border: 1px solid var(--border);
+    border-radius: 7px; padding: 0.25rem 0.5rem;
+    cursor: pointer; display: flex; align-items: center; gap: 0.3rem;
+    font-size: 0.75rem; transition: all 0.2s;
+}
+.btn-color-categoria:hover { border-color: var(--accent); transform: scale(1.05); }
+
+.color-display {
+    width: 16px; height: 16px;
+    border-radius: 50%; border: 1px solid var(--border);
+}
+
+.categoria-badge {
+    background: var(--accent-dim);
+    border: 1px solid var(--border-accent);
+    color: var(--accent);
+    padding: 0.15rem 0.55rem; border-radius: 20px;
+    font-size: 0.7rem; font-weight: 700;
+    min-width: 22px; text-align: center;
+}
+
+/* ── JORNADAS ── */
+.jornadas-lista { display: none; }
+.jornadas-lista.activo { display: block; }
+
+.jornada-item { border-bottom: 1px solid var(--agenda-border); }
+
+.jornada-toggle {
+    background: transparent;
+    padding: 0.55rem 1.2rem 0.55rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; transition: background 0.2s;
+    border-left: 2px solid var(--accent-dim);
+}
+.jornada-toggle:hover { background: var(--bg-card); }
+
+.jornada-nombre {
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--text-second); letter-spacing: 0.5px;
+}
+
+.jornada-icon {
+    font-size: 0.65rem; color: var(--text-muted);
+    transition: transform 0.3s;
+}
+.jornada-icon.expandido { transform: rotate(180deg); }
+
+.jornada-partidos {
+    display: none; padding: 0.4rem 0.8rem;
+    background: var(--bg-card);
+    max-height: 200px; overflow-y: auto;
+}
+.jornada-partidos.activo { display: block; }

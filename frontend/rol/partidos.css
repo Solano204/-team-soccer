@@ -1,0 +1,203 @@
+/* ========== PARTIDOS ========== */
+
+.partidos {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* PARTIDO BASE */
+.partido {
+    padding: 0.45rem 0.7rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    gap: 0.4rem;
+    position: relative;
+    transition: background .15s;
+}
+.partido:last-child { border-bottom: none; }
+.partido:hover { background: rgba(255,255,255,0.04); }
+
+/* PARTIDO JUGADO */
+.partido.partido-jugado {
+    background: rgba(34,197,94,0.07);
+    border-bottom-color: rgba(34,197,94,0.15);
+}
+.partido.partido-jugado::after {
+    content: '✓';
+    position: absolute;
+    right: 6px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: var(--green);
+    font-weight: 900;
+}
+
+/* PARTIDO MOVIDO (original tachado) */
+.partido.partido-movido {
+    background: rgba(255,255,255,0.02);
+    border-bottom-color: rgba(245,158,11,0.2);
+    opacity: 0.4;
+    pointer-events: none;
+}
+.partido.partido-movido .equipo {
+    text-decoration: line-through;
+    color: var(--text2);
+}
+.partido.partido-movido .vs-badge {
+    background: rgba(148,163,184,0.15);
+    border-color: var(--border);
+    color: var(--text2);
+}
+.partido.partido-movido::after {
+    content: '📤';
+    position: absolute;
+    right: 6px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+}
+
+/* PARTIDO AGREGADO (copia movida) */
+.partido.partido-agregado {
+    background: rgba(245,158,11,0.07);
+    border-bottom-color: rgba(245,158,11,0.2);
+    border-left: 3px solid var(--accent);
+    padding-right: 2.2rem;
+}
+.partido.partido-agregado::after {
+    content: '📥';
+    position: absolute;
+    right: 28px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+}
+
+/* BOTÓN ELIMINAR AGREGADO */
+.btn-eliminar-agregado {
+    position: absolute;
+    right: 5px; top: 50%;
+    transform: translateY(-50%);
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.35);
+    color: #f87171;
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+    z-index: 10;
+}
+.btn-eliminar-agregado:hover { background: rgba(239,68,68,0.3); }
+
+/* ── VISTA SUGERENCIA ── */
+.partido.partido-sugerido {
+    background: rgba(59,130,246,0.1);
+    border-bottom-color: rgba(59,130,246,0.2);
+    border-left: 3px solid #3b82f6;
+}
+.partido.partido-sugerido::after {
+    content: '🔄';
+    position: absolute;
+    right: 6px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.85rem;
+}
+
+.partido.partido-normal-sugerencia {
+    background: rgba(59,130,246,0.04);
+    border-bottom-color: rgba(59,130,246,0.12);
+}
+.partido.partido-normal-sugerencia::after {
+    content: '⚽';
+    position: absolute;
+    right: 6px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    opacity: 0.5;
+}
+
+.jornada-sugerencia .partido.partido-jugado {
+    background: rgba(245,158,11,0.08);
+    border-bottom-color: rgba(245,158,11,0.2);
+}
+.jornada-sugerencia .partido.partido-jugado::after { color: #fbbf24; }
+
+/* EQUIPOS */
+.equipo {
+    font-weight: 700;
+    flex: 1;
+    font-size: 0.72rem;
+    text-align: center;
+    color: var(--text);
+    letter-spacing: 0.2px;
+}
+
+/* VS BADGE */
+.vs-badge {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.35);
+    color: #f87171;
+    padding: 0.1rem 0.35rem;
+    border-radius: 6px;
+    font-size: 0.58rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+.jornada-sugerencia .vs-badge {
+    background: rgba(59,130,246,0.15);
+    border-color: rgba(59,130,246,0.35);
+    color: #93c5fd;
+}
+
+/* DESCANSO */
+.partido.descanso {
+    background: rgba(168,85,247,0.08);
+    border-bottom-color: rgba(168,85,247,0.2);
+    justify-content: center;
+}
+.descanso-text {
+    color: #c084fc;
+    font-weight: 700;
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+}
+
+/* CHECKBOX PARTIDO */
+.checkbox-partido {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-shrink: 0;
+}
+.checkbox-partido input[type="checkbox"] {
+    width: 13px; height: 13px;
+    cursor: pointer;
+    accent-color: var(--green);
+}
+.checkbox-partido label {
+    font-size: 0.58rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--text2);
+    text-transform: uppercase;
+}
+
+/* DRAGGABLE */
+.partido.draggable { cursor: move; }
+.partido.dragging  { opacity: 0.4; transform: scale(0.97); }
+
+.partido-sugerido.draggable:hover::before,
+.partido-normal-sugerencia.draggable:hover::before {
+    content: '⋮⋮';
+    position: absolute;
+    left: 4px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.85rem;
+    color: var(--text2);
+    opacity: 0.6;
+}

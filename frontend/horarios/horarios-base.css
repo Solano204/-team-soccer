@@ -1,0 +1,247 @@
+/* =============================================
+   HORARIOS BASE · FUT 7 EL JAGUAR
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap');
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+/* ── VARIABLES ── */
+:root {
+    --bg:            #09111f;
+    --bg-2:          #0d1a2e;
+    --bg-card:       rgba(255,255,255,0.04);
+    --bg-card-2:     rgba(255,255,255,0.07);
+    --bg-header:     rgba(9,17,31,0.97);
+    --border:        rgba(255,255,255,0.08);
+    --border-accent: rgba(59,130,246,0.35);
+    --text-primary:  #ffffff;
+    --text-second:   rgba(255,255,255,0.55);
+    --text-muted:    rgba(255,255,255,0.28);
+    --gold:          #c8a84b;
+    --gold-dim:      rgba(200,168,75,0.15);
+    --accent:        #3b82f6;
+    --accent-dim:    rgba(59,130,246,0.15);
+    --green:         #22c55e;
+    --green-dim:     rgba(34,197,94,0.12);
+    --red:           #ef4444;
+    --shadow:        rgba(0,0,0,0.6);
+    --panel-left-bg: #0b1828;
+    --panel-right-bg:#09111f;
+    --agenda-bg:     rgba(255,255,255,0.03);
+    --agenda-border: rgba(255,255,255,0.07);
+    --hora-bg:       rgba(59,130,246,0.08);
+    --th-bg:         rgba(255,255,255,0.06);
+    --row-hover:     rgba(59,130,246,0.06);
+    --cell-hover:    rgba(59,130,246,0.1);
+    --cell-hover-border: rgba(59,130,246,0.5);
+}
+
+[data-theme="light"] {
+    --bg:            #eef2f8;
+    --bg-2:          #e4eaf4;
+    --bg-card:       rgba(255,255,255,0.7);
+    --bg-card-2:     rgba(255,255,255,0.95);
+    --bg-header:     rgba(238,242,248,0.97);
+    --border:        rgba(0,0,0,0.08);
+    --border-accent: rgba(37,99,235,0.28);
+    --text-primary:  #0f172a;
+    --text-second:   rgba(15,23,42,0.6);
+    --text-muted:    rgba(15,23,42,0.38);
+    --gold:          #a07828;
+    --gold-dim:      rgba(160,120,40,0.1);
+    --accent:        #2563eb;
+    --accent-dim:    rgba(37,99,235,0.1);
+    --green:         #16a34a;
+    --green-dim:     rgba(22,163,74,0.1);
+    --red:           #dc2626;
+    --shadow:        rgba(0,0,0,0.1);
+    --panel-left-bg: #e8eef8;
+    --panel-right-bg:#eef2f8;
+    --agenda-bg:     rgba(255,255,255,0.8);
+    --agenda-border: rgba(0,0,0,0.07);
+    --hora-bg:       rgba(37,99,235,0.07);
+    --th-bg:         rgba(37,99,235,0.07);
+    --row-hover:     rgba(37,99,235,0.04);
+    --cell-hover:    rgba(37,99,235,0.08);
+    --cell-hover-border: rgba(37,99,235,0.45);
+}
+
+/* ── BASE ── */
+html, body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ── LAYOUT ── */
+.layout-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ── HEADER ── */
+.header {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 1.8rem;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+    z-index: 50;
+}
+
+.header-brand { display: flex; align-items: center; gap: 0.9rem; }
+
+.header-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), #1d4ed8);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.35);
+    flex-shrink: 0;
+}
+
+.header-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.3rem; letter-spacing: 4px;
+    color: var(--text-primary); line-height: 1;
+}
+
+.header-sub {
+    font-size: 0.6rem; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--gold);
+    margin-top: 2px; font-weight: 600;
+}
+
+.header-botones { display: flex; gap: 0.7rem; align-items: center; }
+
+/* ── PANEL IZQUIERDO ── */
+.panel-izquierdo {
+    background: var(--panel-left-bg);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    height: calc(100vh - 60px);
+    display: flex; flex-direction: column;
+}
+
+/* ── PANEL DERECHO ── */
+.panel-derecho {
+    background: var(--panel-right-bg);
+    overflow: hidden;
+    height: calc(100vh - 60px);
+    padding: 0.8rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
+}
+
+/* ── CABECERA PANEL IZQUIERDO ── */
+.controles-vista {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-card);
+    flex-shrink: 0;
+}
+
+.panel-title {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.1rem; letter-spacing: 3px;
+    color: var(--text-primary); margin-bottom: 0.25rem;
+}
+
+.panel-title-icon { font-size: 1rem; }
+
+.panel-hint {
+    font-size: 0.62rem; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-muted);
+}
+
+/* ── SCROLLBARS ── */
+.panel-izquierdo::-webkit-scrollbar { width: 6px; }
+.panel-izquierdo::-webkit-scrollbar-track { background: transparent; }
+.panel-izquierdo::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 6px;
+}
+
+.agenda-table tbody::-webkit-scrollbar { width: 6px; }
+.agenda-table tbody::-webkit-scrollbar-track { background: transparent; }
+.agenda-table tbody::-webkit-scrollbar-thumb {
+    background: var(--accent-dim);
+    border-radius: 6px;
+}
+
+/* ── MENSAJE VACÍO ── */
+.mensaje-vacio {
+    text-align: center; padding: 2rem 1rem;
+    color: var(--text-muted);
+}
+.mensaje-vacio h3 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.2rem; letter-spacing: 2px;
+    color: var(--text-second); margin-bottom: 0.4rem;
+}
+.mensaje-vacio p { font-size: 0.78rem; }
+
+/* ── MENSAJE ROTAR EN MÓVIL ── */
+.rotar-msg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+.rotar-icon {
+    font-size: 4rem;
+    animation: rotar 2s ease-in-out infinite;
+}
+
+@keyframes rotar {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(90deg); }
+}
+
+.rotar-texto {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    color: var(--text);
+}
+
+.rotar-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+    .rotar-msg { display: flex; }
+    .layout-container { display: none; }
+}
+
+/* ── HEADER RESPONSIVE ── */
+@media (max-width: 768px) {
+    .header {
+        padding: 0.6rem 0.9rem;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+    .header-title { font-size: 1rem; letter-spacing: 2px; }
+    .header-sub { display: none; }
+    .header-icon { width: 32px; height: 32px; font-size: 1rem; }
+    .btn-volver, .btn-limpiar { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
+}

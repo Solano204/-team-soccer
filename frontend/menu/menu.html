@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- AQUÍ, en esta posición exacta -->
+    <script>
+      const t = localStorage.getItem('tema_jaguar');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fut 7 El Jaguar - Gestión</title>
+    <link rel="stylesheet" href="menu-base.css">
+    <link rel="stylesheet" href="menu-componentes.css">
+</head>
+<body>
+
+<div class="splash">
+  <div class="splash-jaguar">🐆</div>
+  <div class="splash-text">FUT 7 EL JAGUAR</div>
+  <div class="splash-sub">Sistema de Gestión</div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
+
+<div class="bg-lines"></div>
+<div class="bg-circle"></div>
+
+<div class="app">
+  <header class="header">
+    <div class="header-brand">
+      <div class="header-logo">🐆</div>
+      <div>
+        <div class="header-title">FUT 7 · EL JAGUAR</div>
+        <div class="header-subtitle">Sistema de Gestión</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="season-badge">Temporada 2025</span>
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <div class="theme-slider"></div>
+        <div class="theme-option">🌙</div>
+        <div class="theme-option">☀️</div>
+      </div>
+      <button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="categoria-section">
+      <button class="btn-nueva-cat" onclick="mostrarFormularioCrear()">+ Nueva Categoría</button>
+      <div class="selector-container" style="position:relative;flex:1;">
+        <div class="selector-cat custom-select" id="customSelect" onclick="toggleOptions()">
+          <span class="selector-cat-text" id="selectedText">🏆 Selecciona una categoría</span>
+          <span style="color:var(--text-muted);font-size:0.8rem;">▼</span>
+        </div>
+        <div class="options-container" id="optionsContainer"></div>
+      </div>
+    </div>
+
+    <div class="cat-active-panel oculto" id="opcionesCategoria">
+      <div class="cat-dot"></div>
+      <span class="cat-active-text">Administrando:</span>
+      <span class="cat-active-name" id="textoCategoria"></span>
+    </div>
+
+    <div class="buttons-grid">
+      <button class="btn-module" style="--accent:rgba(34,197,94,0.6);--accent-glow:rgba(34,197,94,0.4);" onclick="irASeccion('equipos')">
+        <div class="btn-module-icon">👥</div>
+        <div class="btn-module-label">Equipos</div>
+        <div class="btn-module-desc">Gestión de equipos</div>
+      </button>
+      <button class="btn-module" style="--accent:rgba(234,179,8,0.6);--accent-glow:rgba(234,179,8,0.4);" onclick="irASeccion('rol')">
+        <div class="btn-module-icon">📅</div>
+        <div class="btn-module-label">Rol de Juegos</div>
+        <div class="btn-module-desc">Calendario de partidos</div>
+      </button>
+      <button class="btn-module" style="--accent:rgba(99,102,241,0.6);--accent-glow:rgba(99,102,241,0.4);" onclick="irASeccion('horarios')">
+        <div class="btn-module-icon">⏰</div>
+        <div class="btn-module-label">Horarios</div>
+        <div class="btn-module-desc">Agenda semanal</div>
+      </button>
+      <button class="btn-module" style="--accent:rgba(239,68,68,0.6);--accent-glow:rgba(239,68,68,0.4);" onclick="irASeccion('puntos')">
+        <div class="btn-module-icon">🏆</div>
+        <div class="btn-module-label">Puntos & Goles</div>
+        <div class="btn-module-desc">Tabla de posiciones</div>
+      </button>
+      <button class="btn-module" style="--accent:rgba(59,130,246,0.6);--accent-glow:rgba(59,130,246,0.4);" onclick="location.href='../graficas/graficas.html?categoria=' + encodeURIComponent(localStorage.getItem('categoriaSeleccionada') || '')">
+  <div class="btn-module-icon">📊</div>
+  <div class="btn-module-label">Gráficas</div>
+  <div class="btn-module-desc">Estadísticas de inscripciones</div>
+</button>
+    </div>
+
+  </main>
+
+  <footer class="footer">
+    <span class="footer-left">FUT 7 El Jaguar · v2.0</span>
+    <div class="footer-right">
+      <div class="status-dot"></div>
+      <span>Sistema activo</span>
+    </div>
+  </footer>
+</div>
+
+<!-- Modal crear/editar -->
+<div id="overlay" class="overlay" onclick="cerrarTodo()"></div>
+
+<div id="modalCategoria" class="modal">
+    <h3 id="tituloModal">Nueva Categoría</h3>
+    <div class="form-group">
+        <label for="nombreCategoria">Nombre</label>
+        <input type="text" id="nombreCategoria" placeholder="Ej: Varonil, Femenil...">
+        <div id="errorNombre" class="error-message"></div>
+    </div>
+    <div class="form-buttons">
+        <button class="btn-form btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-form btn-guardar" onclick="guardarCategoria()">Guardar</button>
+    </div>
+</div>
+
+<!-- Modal eliminar -->
+<div id="modalEliminar" class="modal">
+    <h3>Eliminar Categoría</h3>
+    <p style="text-align:center;color:var(--text-secondary);margin-bottom:2rem;line-height:1.6;">
+        ¿Eliminar "<span id="categoriaEliminar" style="color:#f87171;font-weight:700;"></span>"?<br>
+        <span style="font-size:0.85rem;color:var(--text-muted);">Esta acción no se puede deshacer.</span>
+    </p>
+    <div class="form-buttons">
+        <button class="btn-form btn-cancelar" onclick="cerrarModalEliminar()">Cancelar</button>
+        <button class="btn-form btn-eliminar" onclick="confirmarEliminar()">Eliminar</button>
+    </div>
+</div>
+
+<script src="menu-categorias.js"></script>
+<script src="menu-navegacion.js"></script>
+</body>
+</html>

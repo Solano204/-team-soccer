@@ -1,0 +1,76 @@
+/* ========== BASE — DISEÑO OSCURO MODERNO ========== */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap');
+
+:root {
+    --bg:        #0a1628;
+    --bg2:       #0d1f3c;
+    --card:      rgba(255,255,255,0.04);
+    --border:    rgba(255,255,255,0.08);
+    --accent:    #f59e0b;
+    --green:     #22c55e;
+    --red:       #ef4444;
+    --yellow:    #f59e0b;
+    --blue:      #3b82f6;
+    --purple:    #a855f7;
+    --text:      #e2e8f0;
+    --text2:     #94a3b8;
+    --radius:    14px;
+    --shadow:    0 4px 24px rgba(0,0,0,0.4);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Fondo sutil con grid */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,255,255,0.015) 60px, rgba(255,255,255,0.015) 61px),
+        repeating-linear-gradient(0deg,  transparent, transparent 60px, rgba(255,255,255,0.015) 60px, rgba(255,255,255,0.015) 61px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.rol-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.2rem 1rem 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* MENSAJE INFO */
+.mensaje-info {
+    text-align: center;
+    color: var(--text2);
+    padding: 2.5rem 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+.mensaje-info strong { color: var(--accent); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+
+@media (max-width: 480px) {
+    .rol-container { padding: 0.8rem 0.7rem 1.5rem; }
+}
+
+@media print {
+    body { background: #fff !important; }
+}

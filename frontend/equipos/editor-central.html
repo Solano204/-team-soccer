@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor Central — Fut 7 El Jaguar</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&family=Oswald:wght@400;700&family=Anton&family=Teko:wght@400;600;700&family=Barlow+Condensed:wght@400;700;900&family=Black+Han+Sans&family=Rajdhani:wght@400;700&family=Exo+2:wght@400;700;900&family=Inter:wght@400;700&family=Poppins:wght@400;700&family=Montserrat:wght@400;700;900&family=Roboto+Condensed:wght@400;700&family=Lato:wght@400;700&family=Nunito:wght@400;700&family=Playfair+Display:wght@400;700&family=Merriweather:wght@400;700&family=Cinzel:wght@400;700&family=Orbitron:wght@400;700;900&family=Audiowide&family=Quantico:wght@400;700&family=Russo+One&family=Permanent+Marker&family=Creepster&display=swap" rel="stylesheet">
+<script>var t=localStorage.getItem('tema_jaguar')||'dark';document.documentElement.setAttribute('data-theme',t);</script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1b2e;--surface:#111f35;--surface2:#162840;--surface3:#1c3352;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f0f4ff;--text2:rgba(240,244,255,0.6);--text3:rgba(240,244,255,0.3);
+  --accent:#4f8ef7;--gold:#e0b84a;--gold-dim:rgba(224,184,74,0.15);
+  --red:#f05f5f;--sel:#4f8ef7;--sel-bg:rgba(79,142,247,0.15);--shadow:rgba(0,0,0,0.5);
+}
+[data-theme="light"]{
+  --bg:#e8eef6;--surface:#f4f7fc;--surface2:#ffffff;--surface3:#eef2f8;
+  --border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.14);
+  --text:#0f1e35;--text2:rgba(15,30,53,0.6);--text3:rgba(15,30,53,0.3);
+  --accent:#2563eb;--shadow:rgba(0,0,0,0.15);
+}
+html,body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;gap:10px;padding:0 1rem;height:52px;background:var(--surface);border-bottom:1px solid var(--border2);flex-shrink:0;z-index:100}
+.topbar-brand{display:flex;align-items:center;gap:8px;margin-right:4px}
+.brand-logo{font-size:1.3rem}
+.brand-title{font-family:'Bebas Neue',cursive;font-size:1rem;letter-spacing:3px}
+.brand-sub{font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:600}
+.btn-top{padding:0.45rem 0.9rem;border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .18s;border:1px solid var(--border2);background:var(--surface2);color:var(--text2)}
+.btn-top:hover{border-color:var(--accent);color:var(--text)}
+.btn-top-save{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-top-save:hover{opacity:.88}
+.btn-top-asign{background:var(--gold-dim);color:var(--gold);border-color:rgba(224,184,74,.4)}
+.btn-top-asign:hover{background:rgba(224,184,74,.22)}
+#nombreInput{background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--text);font-family:'Bebas Neue',cursive;font-size:1rem;letter-spacing:2px;padding:2px 6px;width:180px;outline:none;text-align:center}
+#nombreInput:focus{border-bottom-color:var(--accent)}
+.topbar-spacer{flex:1}
+.zoom-control{display:flex;align-items:center;gap:4px}
+.zoom-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.zoom-btn:hover{border-color:var(--accent);color:var(--accent)}
+.zoom-val{font-size:0.75rem;color:var(--text2);min-width:40px;text-align:center}
+
+/* WORKSPACE */
+.workspace{display:flex;flex:1;overflow:hidden}
+
+/* TOOLBAR IZQ */
+.toolbar-left{width:160px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border2);overflow-y:auto;display:flex;flex-direction:column}
+.tool-section-title{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding:10px 12px 5px;font-weight:700}
+.tool-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;background:transparent;border:none;color:var(--text2);font-family:'Outfit',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%;text-align:left;transition:all .15s;border-radius:0}
+.tool-btn:hover{background:var(--sel-bg);color:var(--accent)}
+.tool-btn.active{background:var(--sel-bg);color:var(--accent);border-right:2px solid var(--accent)}
+.tool-icon{font-size:1rem;width:20px;text-align:center}
+
+/* CANVAS */
+.canvas-area{flex:1;background:var(--bg);overflow:auto;display:flex;align-items:center;justify-content:center;position:relative;cursor:default}
+.canvas-area.tool-activa{cursor:crosshair}
+.canvas-wrap{position:relative}
+#credCanvas{position:relative;width:680px;height:430px;overflow:hidden;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.7);transform-origin:center center}
+#canvasBg{position:absolute;inset:0;border-radius:inherit}
+#canvasImgOverlay{position:absolute;inset:0;border-radius:inherit;pointer-events:none}
+.el{position:absolute;box-sizing:border-box;cursor:move;user-select:none}
+.el.selected{outline:2px solid var(--sel);outline-offset:1px}
+.el.selected .rh{display:block}
+.rh{display:none;position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--sel);border-radius:2px;z-index:10}
+.rh-tl{top:-5px;left:-5px;cursor:nw-resize}
+.rh-tc{top:-5px;left:calc(50% - 4px);cursor:n-resize}
+.rh-tr{top:-5px;right:-5px;cursor:ne-resize}
+.rh-ml{top:calc(50% - 4px);left:-5px;cursor:w-resize}
+.rh-mr{top:calc(50% - 4px);right:-5px;cursor:e-resize}
+.rh-bl{bottom:-5px;left:-5px;cursor:sw-resize}
+.rh-bc{bottom:-5px;left:calc(50% - 4px);cursor:s-resize}
+.rh-br{bottom:-5px;right:-5px;cursor:se-resize}
+.insert-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(79,142,247,.18);border:1px solid rgba(79,142,247,.4);color:var(--accent);padding:6px 16px;border-radius:20px;font-size:0.75rem;font-weight:700;letter-spacing:1px;pointer-events:none;display:none}
+.insert-hint.show{display:block}
+
+/* PANEL PROPS */
+.panel-props{width:240px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;overflow:hidden}
+.props-header{display:flex;align-items:center;padding:10px 12px 6px;border-bottom:1px solid var(--border)}
+.props-title{font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-weight:700;flex:1}
+.props-del-btn{background:rgba(240,95,95,.12);border:1px solid rgba(240,95,95,.3);color:var(--red);border-radius:6px;padding:3px 8px;font-size:0.72rem;cursor:pointer}
+.props-del-btn:hover{background:rgba(240,95,95,.25)}
+.props-scroll{flex:1;overflow-y:auto;padding:8px}
+.props-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:120px;color:var(--text3);font-size:0.75rem;text-align:center;gap:6px;padding:16px}
+.prop-group{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.prop-group-title{font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:6px;font-weight:700}
+.prop-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.prop-row:last-child{margin-bottom:0}
+.prop-lbl{font-size:0.72rem;color:var(--text2);min-width:46px;flex-shrink:0}
+.prop-input{background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:4px 6px;font-family:'Outfit',sans-serif;font-size:0.75rem;outline:none}
+.prop-input:focus{border-color:var(--accent)}
+.w52{width:52px}
+.wfull{flex:1;width:100%}
+.prop-color{width:32px;height:28px;border:1px solid var(--border2);border-radius:6px;padding:2px;background:var(--surface3);cursor:pointer}
+.prop-range{flex:1;accent-color:var(--accent)}
+.prop-range-val{font-size:0.7rem;color:var(--text3);min-width:32px;text-align:right}
+.prop-select{flex:1;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:4px 6px;font-family:'Outfit',sans-serif;font-size:0.73rem;outline:none}
+.prop-toggles{display:flex;gap:3px;flex-wrap:wrap}
+.prop-toggle{background:var(--surface3);border:1px solid var(--border2);color:var(--text2);border-radius:5px;padding:3px 7px;font-size:0.72rem;cursor:pointer;font-family:'Outfit',sans-serif}
+.prop-toggle.on{background:rgba(79,142,247,.2);border-color:var(--accent);color:var(--accent)}
+.campo-box{background:rgba(224,184,74,.06);border:1px solid rgba(224,184,74,.3);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.campo-box-title{font-size:0.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;font-weight:700}
+
+/* FONDO PANEL (abajo del props) */
+.fondo-section{border-top:1px solid var(--border2);padding:10px;background:var(--surface);flex-shrink:0}
+.fondo-title{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:8px}
+.bg-preview{height:28px;border-radius:6px;margin-bottom:8px;border:1px solid var(--border2)}
+.bg-img-area{border:1px dashed var(--border2);border-radius:8px;padding:8px;text-align:center;cursor:pointer;font-size:0.72rem;color:var(--text3);transition:all .18s;margin-bottom:6px}
+.bg-img-area:hover{border-color:var(--accent);color:var(--accent)}
+.bg-img-thumb{max-width:100%;max-height:40px;border-radius:4px;margin-top:4px;display:none}
+.btn-quitar-img{width:100%;padding:5px;background:rgba(240,95,95,.1);border:1px solid rgba(240,95,95,.3);color:var(--red);border-radius:7px;font-size:0.72rem;font-weight:700;cursor:pointer;margin-top:4px}
+.btn-quitar-img:hover{background:rgba(240,95,95,.22)}
+.img-preview-wrap{position:relative;width:100%;height:80px;border-radius:8px;overflow:hidden;margin-bottom:6px;background:var(--surface3);border:1px solid var(--border2);display:none}
+.img-preview-wrap img{width:100%;height:100%;object-fit:cover}
+.img-preview-wrap.show{display:block}
+.fondo-tabs{display:flex;gap:4px;margin-bottom:8px}
+.fondo-tab{flex:1;padding:4px;background:var(--surface2);border:1px solid var(--border2);color:var(--text3);border-radius:6px;font-size:0.68rem;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.fondo-tab.on{background:var(--sel-bg);border-color:var(--accent);color:var(--accent)}
+.fondo-panel{display:none}
+.fondo-panel.show{display:block}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:1.5rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal-title{font-family:'Bebas Neue',cursive;font-size:1.1rem;letter-spacing:3px;margin-bottom:10px}
+.modal-text{font-size:0.82rem;color:var(--text2);margin-bottom:16px;line-height:1.5}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.modal-btn-ok{padding:.5rem 1.2rem;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer}
+.modal-btn-cancel{padding:.5rem 1.2rem;background:var(--surface2);color:var(--text2);border:1px solid var(--border2);border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.82rem;cursor:pointer}
+.asign-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;cursor:pointer;margin-bottom:5px}
+.asign-chip{font-size:0.62rem;background:var(--gold-dim);color:var(--gold);padding:2px 8px;border-radius:20px;font-weight:700}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);padding:.6rem 1.4rem;border-radius:10px;font-size:0.82rem;font-weight:700;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;opacity:0;transition:all .28s;z-index:9999;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:linear-gradient(135deg,#f05f5f,#dc2626)}
+</style>
+</head>
+<script>if(!sessionStorage.getItem('sesion_jaguar'))location.replace('../login/index.html');</script>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-logo">🪪</div>
+    <div><div class="brand-title">JAGUAR</div><div class="brand-sub">Editor</div></div>
+  </div>
+  <button class="btn-top" onclick="volverConConfirmacion()">← Volver</button>
+  <input type="text" id="nombreInput" value="Sin nombre" oninput="estado.nombre=this.value">
+  <div class="topbar-spacer"></div>
+  <div class="zoom-control">
+    <button class="zoom-btn" onclick="cambiarZoom(-15)">−</button>
+    <span class="zoom-val" id="zoomVal">100%</span>
+    <button class="zoom-btn" onclick="cambiarZoom(15)">+</button>
+  </div>
+  <button class="btn-top btn-top-save" id="btnGuardar" onclick="guardarDiseno()">💾 Guardar</button>
+</header>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+  <!-- SIDEBAR IZQ -->
+  <aside class="toolbar-left">
+    <div class="tool-section-title">Insertar</div>
+    <button class="tool-btn" id="tool-texto"      onclick="setTool('texto')"><span class="tool-icon">🔤</span> Texto</button>
+    <button class="tool-btn" id="tool-rect"       onclick="setTool('rect')"><span class="tool-icon">⬜</span> Rectángulo</button>
+    <button class="tool-btn" id="tool-linea"      onclick="setTool('linea')"><span class="tool-icon">➖</span> Línea</button>
+    <button class="tool-btn" id="tool-foto"       onclick="setTool('foto')"><span class="tool-icon">👤</span> Foto Jugador</button>
+  </aside>
+
+  <!-- CANVAS -->
+  <main class="canvas-area" id="canvasArea" onclick="canvasClick(event)" onmousedown="canvasMD(event)">
+    <div class="canvas-wrap" id="canvasWrap">
+      <div id="credCanvas">
+        <div id="canvasBg"></div>
+        <div id="canvasImgOverlay"></div>
+      </div>
+    </div>
+    <div class="insert-hint" id="insertHint">Clic para insertar · ESC para cancelar</div>
+  </main>
+
+  <!-- PANEL PROPS -->
+  <aside class="panel-props">
+    <div class="props-header">
+      <div class="props-title" id="propsTitle">PROPIEDADES</div>
+      <button class="props-del-btn" id="propsDelBtn" style="display:none" onclick="eliminarSel()">🗑️</button>
+    </div>
+    <div class="props-scroll" id="propsScroll">
+      <div class="props-empty" id="propsEmpty">
+        <div style="font-size:1.6rem">🖱️</div>
+        <div>Haz clic en un elemento para ver sus propiedades.<br>Doble clic para editar texto.</div>
+      </div>
+      <div id="propsContent" style="display:none"></div>
+    </div>
+
+    <!-- FONDO (siempre visible abajo) -->
+    <div class="fondo-section">
+      <div class="fondo-title">Fondo de Credencial</div>
+      <div class="bg-preview" id="bgPreview"></div>
+      <div class="fondo-tabs">
+        <div class="fondo-tab on" id="tab-color" onclick="setFondoTab('color')">🎨 Color</div>
+        <div class="fondo-tab" id="tab-imagen" onclick="setFondoTab('imagen')">📷 Imagen</div>
+      </div>
+
+      <!-- TAB COLOR -->
+      <div class="fondo-panel show" id="panel-color">
+        <div class="prop-row">
+          <span class="prop-lbl">Color 1</span>
+          <input type="color" class="prop-color" id="bgColor1" value="#1d4ed8" oninput="actualizarFondo()">
+          <span class="prop-lbl" style="margin-left:4px">Color 2</span>
+          <input type="color" class="prop-color" id="bgColor2" value="#0a1628" oninput="actualizarFondo()">
+        </div>
+        <div class="prop-row">
+          <span class="prop-lbl">Dirección</span>
+          <select class="prop-select" id="bgDir" onchange="estado.bgDireccion=this.value;actualizarFondo()">
+            <option value="135deg">↘ Diagonal</option>
+            <option value="to bottom">↓ Vertical</option>
+            <option value="to right">→ Horizontal</option>
+            <option value="to top right">↗ Diagonal 2</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TAB IMAGEN -->
+      <div class="fondo-panel" id="panel-imagen">
+        <div class="img-preview-wrap" id="imgPreviewWrap">
+          <img id="bgImgThumb">
+        </div>
+        <div class="bg-img-area" onclick="document.getElementById('bgImgInput').click()">
+          <input type="file" id="bgImgInput" accept="image/*" style="display:none" onchange="cargarImgFondo(this)">
+          <div id="bgImgAreaTxt">📷 Subir imagen de fondo</div>
+        </div>
+        <div class="prop-row" style="margin-top:6px">
+          <span class="prop-lbl">Opacidad</span>
+          <input type="range" class="prop-range" id="bgImgOp" min="0" max="100" value="80"
+            oninput="actualizarFondo();document.getElementById('bgOpVal').textContent=this.value+'%'">
+          <span class="prop-range-val" id="bgOpVal">80%</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-lbl">Ajuste</span>
+          <select class="prop-select" id="bgFit" onchange="estado.bgFit=this.value;actualizarFondo()">
+            <option value="cover">Cover (llenar)</option>
+            <option value="contain">Contain (completa)</option>
+            <option value="100% 100%">Estirar</option>
+          </select>
+        </div>
+        <div class="prop-row">
+          <span class="prop-lbl">Pos X</span>
+          <input type="range" class="prop-range" min="0" max="100" value="50" id="bgPosX"
+            oninput="estado.bgPosX=+this.value;actualizarFondo();document.getElementById('bgPXVal').textContent=this.value+'%'">
+          <span class="prop-range-val" id="bgPXVal">50%</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-lbl">Pos Y</span>
+          <input type="range" class="prop-range" min="0" max="100" value="50" id="bgPosY"
+            oninput="estado.bgPosY=+this.value;actualizarFondo();document.getElementById('bgPYVal').textContent=this.value+'%'">
+          <span class="prop-range-val" id="bgPYVal">50%</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-lbl">Escala</span>
+          <input type="range" class="prop-range" min="50" max="200" value="100" id="bgEscala"
+            oninput="estado.bgEscalaX=+this.value;estado.bgEscalaY=+this.value;actualizarFondo();document.getElementById('bgEscVal').textContent=this.value+'%'">
+          <span class="prop-range-val" id="bgEscVal">100%</span>
+        </div>
+        <div class="prop-row">
+          <span class="prop-lbl">Desvanecer</span>
+          <input type="range" class="prop-range" min="0" max="45" value="0" id="bgFade"
+            oninput="estado.bgBorderFade=+this.value;actualizarFondo();document.getElementById('bgFadeVal').textContent=this.value+'%'">
+          <span class="prop-range-val" id="bgFadeVal">0%</span>
+        </div>
+        <button class="btn-quitar-img" onclick="quitarImgFondo()">✕ Quitar imagen</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- MODAL ASIGNAR -->
+<div class="modal-overlay" id="modalAsignar">
+  <div class="modal-box">
+    <div class="modal-title">🏷️ Asignar a Categorías</div>
+    <p class="modal-text">Selecciona las categorías que usarán este diseño:</p>
+    <div id="listaCats" style="max-height:220px;overflow-y:auto;margin-bottom:14px"></div>
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="cerrarAsignar()">Cancelar</button>
+      <button class="modal-btn-ok" onclick="confirmarAsignar()">✓ Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SALIDA -->
+<div class="modal-overlay" id="modalSalida">
+  <div class="modal-box">
+    <div class="modal-title" style="color:var(--gold)">⚠️ Cambios sin guardar</div>
+    <p class="modal-text">Tienes cambios sin guardar. ¿Qué deseas hacer?</p>
+    <div class="modal-btns" style="flex-direction:column;gap:6px">
+      <button class="modal-btn-ok" onclick="guardarYSalir()">💾 Guardar y salir</button>
+      <button class="modal-btn-cancel" onclick="history.back()" style="border-color:var(--red)!important;color:var(--red)">Salir sin guardar</button>
+      <button class="modal-btn-cancel" onclick="document.getElementById('modalSalida').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIGURACIÓN
+// ═══════════════════════════════════════════════
+var API       = 'http://localhost:3001';
+var par       = new URLSearchParams(window.location.search);
+var categoria = par.get('categoria') || '';
+var equipo    = par.get('equipo')    || '';
+var disenoId  = par.get('id')        || '';
+
+var CANVAS_W = 680, CANVAS_H = 430, zoom = 100;
+var elSel = null, toolActiva = null;
+var hashInicial = '';
+
+var estado = {
+  nombre:'Sin nombre', bgColor1:'#1d4ed8', bgColor2:'#0a1628',
+  bgDireccion:'135deg', bgImagen:null, bgOpacidad:80,
+  bgSize:'cover', bgPosX:50, bgPosY:50, bgFit:'cover',
+  bgBorderFade:0, bgEscalaX:100, bgEscalaY:100, elementos:[]
+};
+
+// drag & resize
+var drag = {on:false,id:null,sx:0,sy:0,ox:0,oy:0};
+var rsz  = {on:false,id:null,h:'',sx:0,sy:0,ox:0,oy:0,ow:0,oh:0};
+
+var CAMPOS = [
+  {id:'',label:'— Ninguno —'},
+  {id:'foto',   label:'📷 Foto del Jugador'},
+  {id:'nombre', label:'👤 Nombre del Jugador'},
+  {id:'equipo', label:'🏟️ Nombre del Equipo'},
+  {id:'numero', label:'🔢 Número / Dorsal'},
+  {id:'categoria',label:'📋 Categoría'},
+];
+
+var FUENTES = [
+  {id:'bebas',    label:'Bebas Neue',         css:"'Bebas Neue',cursive",      cat:'Display'},
+  {id:'anton',    label:'Anton',              css:"'Anton',sans-serif",         cat:'Display'},
+  {id:'oswald',   label:'Oswald',             css:"'Oswald',sans-serif",        cat:'Display'},
+  {id:'teko',     label:'Teko',               css:"'Teko',sans-serif",          cat:'Display'},
+  {id:'barlow',   label:'Barlow Condensed',   css:"'Barlow Condensed',sans-serif",cat:'Display'},
+  {id:'blackhan', label:'Black Han Sans',     css:"'Black Han Sans',sans-serif", cat:'Display'},
+  {id:'rajdhani', label:'Rajdhani',           css:"'Rajdhani',sans-serif",      cat:'Display'},
+  {id:'exo',      label:'Exo 2',              css:"'Exo 2',sans-serif",         cat:'Display'},
+  {id:'outfit',   label:'Outfit',             css:"'Outfit',sans-serif",        cat:'Texto'},
+  {id:'inter',    label:'Inter',              css:"'Inter',sans-serif",         cat:'Texto'},
+  {id:'poppins',  label:'Poppins',            css:"'Poppins',sans-serif",       cat:'Texto'},
+  {id:'montserrat',label:'Montserrat',        css:"'Montserrat',sans-serif",    cat:'Texto'},
+  {id:'roboto',   label:'Roboto Condensed',   css:"'Roboto Condensed',sans-serif",cat:'Texto'},
+  {id:'lato',     label:'Lato',               css:"'Lato',sans-serif",          cat:'Texto'},
+  {id:'nunito',   label:'Nunito',             css:"'Nunito',sans-serif",        cat:'Texto'},
+  {id:'playfair', label:'Playfair Display',   css:"'Playfair Display',serif",   cat:'Serif'},
+  {id:'merriweather',label:'Merriweather',    css:"'Merriweather',serif",       cat:'Serif'},
+  {id:'cinzel',   label:'Cinzel',             css:"'Cinzel',serif",             cat:'Serif'},
+  {id:'orbitron', label:'Orbitron',           css:"'Orbitron',sans-serif",      cat:'Tech'},
+  {id:'audiowide',label:'Audiowide',          css:"'Audiowide',sans-serif",     cat:'Tech'},
+  {id:'quantico', label:'Quantico',           css:"'Quantico',sans-serif",      cat:'Tech'},
+  {id:'russo',    label:'Russo One',          css:"'Russo One',sans-serif",     cat:'Deco'},
+  {id:'permanent',label:'Permanent Marker',   css:"'Permanent Marker',cursive", cat:'Deco'},
+  {id:'creepster',label:'Creepster',          css:"'Creepster',cursive",        cat:'Deco'},
+];
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function getEl(id){return estado.elementos.find(function(e){return e.id===id;})||null;}
+function fuenteCSS(id){var f=FUENTES.find(function(x){return x.id===id;});return f?f.css:"'Outfit',sans-serif";}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function colorToHex(c){
+  if(!c||c==='transparent')return '#000000';
+  if(c.startsWith('#')&&(c.length===4||c.length===7))return c;
+  var m=c.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if(m){var h=function(n){return('0'+parseInt(n).toString(16)).slice(-2);};return'#'+h(m[1])+h(m[2])+h(m[3]);}
+  return '#ffffff';
+}
+function calcHash(){return JSON.stringify(estado.elementos)+estado.bgColor1+estado.bgColor2+(estado.bgImagen?'1':'0');}
+function toast(msg,err){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(err?' error':'');
+  void t.offsetWidth; t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2600);
+}
+
+// ═══════════════════════════════════════════════
+//  ELEMENTOS DEFAULT
+// ═══════════════════════════════════════════════
+function elementosDefault(){
+  return [
+    {id:'el_titulo',tipo:'texto',campo:'',x:20,y:14,w:640,h:68,visible:true,opacity:100,
+     texto:'FUT 7 EL JAGUAR',fuente:'bebas',fontSize:52,color:'#ffffff',bold:true,italic:false,
+     align:'center',letterSpacing:3,strokeWidth:0,strokeColor:'#000000',
+     borderWidth:0,borderColor:'#ffffff',borderStyle:'solid',borderBlur:0,
+     bgColor:'transparent',radio:0,sombra:false,sombraBlur:8,sombraColor:'rgba(0,0,0,0.8)',sombraX:0,sombraY:2,nombre:'Titulo'},
+    {id:'el_foto',tipo:'foto',campo:'foto',x:28,y:105,w:200,h:245,visible:true,opacity:100,
+     radio:10,src:null,bgColor:'rgba(255,255,255,0.1)',borderWidth:2,
+     borderColor:'rgba(255,255,255,0.5)',borderStyle:'solid',borderBlur:0,
+     sombra:false,sombraBlur:10,sombraColor:'rgba(0,0,0,0.5)',nombre:'Foto Jugador'},
+    {id:'el_lbl_eq',tipo:'texto',campo:'',x:252,y:106,w:180,h:22,visible:true,opacity:100,
+     texto:'EQUIPO:',fuente:'outfit',fontSize:13,color:'#ffffff',bold:true,italic:false,
+     align:'left',letterSpacing:1,strokeWidth:0,strokeColor:'#000000',
+     borderWidth:0,borderColor:'#ffffff',borderStyle:'solid',borderBlur:0,
+     bgColor:'transparent',radio:0,sombra:false,sombraBlur:6,sombraColor:'rgba(0,0,0,0.7)',sombraX:0,sombraY:1,nombre:'Label Equipo'},
+    {id:'el_rect_eq',tipo:'rect',campo:'equipo',x:252,y:128,w:400,h:58,visible:true,opacity:100,
+     bgColor:'rgba(255,255,255,0.92)',borderColor:'rgba(255,255,255,0)',borderWidth:0,
+     borderStyle:'solid',borderBlur:0,radio:8,backdropBlur:0,
+     sombra:false,sombraBlur:8,sombraColor:'rgba(0,0,0,0.3)',sombraX:0,sombraY:3,nombre:'Campo Equipo'},
+    {id:'el_lbl_nom',tipo:'texto',campo:'',x:252,y:230,w:180,h:22,visible:true,opacity:100,
+     texto:'NOMBRE:',fuente:'outfit',fontSize:13,color:'#ffffff',bold:true,italic:false,
+     align:'left',letterSpacing:1,strokeWidth:0,strokeColor:'#000000',
+     borderWidth:0,borderColor:'#ffffff',borderStyle:'solid',borderBlur:0,
+     bgColor:'transparent',radio:0,sombra:false,sombraBlur:6,sombraColor:'rgba(0,0,0,0.7)',sombraX:0,sombraY:1,nombre:'Label Nombre'},
+    {id:'el_rect_nom',tipo:'rect',campo:'nombre',x:252,y:252,w:400,h:58,visible:true,opacity:100,
+     bgColor:'rgba(255,255,255,0.92)',borderColor:'rgba(255,255,255,0)',borderWidth:0,
+     borderStyle:'solid',borderBlur:0,radio:8,backdropBlur:0,
+     sombra:false,sombraBlur:8,sombraColor:'rgba(0,0,0,0.3)',sombraX:0,sombraY:3,nombre:'Campo Nombre'},
+    {id:'el_num',tipo:'texto',campo:'numero',x:555,y:348,w:108,h:60,visible:true,opacity:100,
+     texto:'#10',fuente:'bebas',fontSize:40,color:'rgba(255,255,255,0.45)',bold:false,italic:false,
+     align:'right',letterSpacing:0,strokeWidth:0,strokeColor:'#000000',
+     borderWidth:0,borderColor:'#ffffff',borderStyle:'solid',borderBlur:0,
+     bgColor:'transparent',radio:0,sombra:false,sombraBlur:8,sombraColor:'rgba(0,0,0,0.8)',sombraX:0,sombraY:2,nombre:'Numero'}
+  ];
+}
+
+// ═══════════════════════════════════════════════
+//  CARGAR DESDE RAILWAY
+// ═══════════════════════════════════════════════
+async function cargarDiseno(){
+  if(!disenoId){estado.elementos=elementosDefault();renderTodo();return;}
+  try{
+    var r=await fetch(API+'/disenos/'+encodeURIComponent(categoria));
+    var lista=await r.json();
+    var d=lista.find(function(x){return x.id===disenoId;});
+    if(!d){estado.elementos=elementosDefault();renderTodo();return;}
+    estado.nombre      = d.nombre||'Sin nombre';
+    estado.bgColor1    = d.bgColor1||d.colorFondo||'#1d4ed8';
+    estado.bgColor2    = d.bgColor2||d.colorFondo2||'#0a1628';
+    estado.bgDireccion = d.bgDireccion||'135deg';
+    estado.bgImagen    = d.bgImagen||d.imagen||null;
+estado.bgOpacidad  = d.bgOpacidad!==undefined?d.bgOpacidad:80;
+    estado.bgFit       = d.bgFit||'cover';
+    estado.bgPosX      = d.bgPosX!==undefined?d.bgPosX:50;
+    estado.bgPosY      = d.bgPosY!==undefined?d.bgPosY:50;
+    estado.bgEscalaX   = d.bgEscalaX||100;
+    estado.bgEscalaY   = d.bgEscalaY||100;
+    estado.bgBorderFade= d.bgBorderFade||0;    estado.elementos   = (d.elementos&&d.elementos.length)?d.elementos:elementosDefault();
+    document.getElementById('nombreInput').value = estado.nombre;
+    document.getElementById('bgColor1').value    = estado.bgColor1;
+    document.getElementById('bgColor2').value    = estado.bgColor2;
+    document.getElementById('bgImgOp').value     = estado.bgOpacidad;
+    document.getElementById('bgOpVal').textContent = estado.bgOpacidad+'%';
+    if(estado.bgImagen){
+      var wrap=document.getElementById('imgPreviewWrap');
+      var th=document.getElementById('bgImgThumb');
+      th.src=estado.bgImagen;wrap.classList.add('show');
+      document.getElementById('bgImgAreaTxt').textContent='📷 Cambiar imagen';
+      setFondoTab('imagen');
+      // Restaurar sliders
+      if(d.bgPosX!==undefined){document.getElementById('bgPosX').value=d.bgPosX;document.getElementById('bgPXVal').textContent=d.bgPosX+'%';}
+      if(d.bgPosY!==undefined){document.getElementById('bgPosY').value=d.bgPosY;document.getElementById('bgPYVal').textContent=d.bgPosY+'%';}
+      if(d.bgEscalaX!==undefined){document.getElementById('bgEscala').value=d.bgEscalaX;document.getElementById('bgEscVal').textContent=d.bgEscalaX+'%';}
+      if(d.bgBorderFade!==undefined){document.getElementById('bgFade').value=d.bgBorderFade;document.getElementById('bgFadeVal').textContent=d.bgBorderFade+'%';}
+      if(d.bgFit){document.getElementById('bgFit').value=d.bgFit;}
+      actualizarFondo();
+    }
+  }catch(e){estado.elementos=elementosDefault();}
+  renderTodo();
+}
+
+// ═══════════════════════════════════════════════
+//  GUARDAR EN RAILWAY
+// ═══════════════════════════════════════════════
+async function guardarDiseno(){
+  var nombre=document.getElementById('nombreInput').value.trim()||'Sin nombre';
+  var catActual=categoria||new URLSearchParams(window.location.search).get('categoria')||'';
+  var id=disenoId||('dis_'+Date.now());
+  var obj={
+    id:id, nombre:nombre, categoria_id:catActual,
+    bgColor1:estado.bgColor1, bgColor2:estado.bgColor2,
+    bgDireccion:estado.bgDireccion, bgImagen:estado.bgImagen,
+    bgOpacidad:estado.bgOpacidad, bgFit:estado.bgFit||'cover',
+    bgPosX:estado.bgPosX||50, bgPosY:estado.bgPosY||50,
+    bgEscalaX:estado.bgEscalaX||100, bgEscalaY:estado.bgEscalaY||100,
+    bgBorderFade:estado.bgBorderFade||0, elementos:estado.elementos,
+    colorFondo:estado.bgColor1, colorFondo2:estado.bgColor2,
+    imagen:estado.bgImagen, opacidad:estado.bgOpacidad,
+    fechaGuardado:Date.now()
+  };
+  try{
+    // Use PUT to update if disenoId already exists, POST to create new
+    var url = disenoId ? API+'/disenos/'+encodeURIComponent(disenoId) : API+'/disenos';
+    var method = disenoId ? 'PUT' : 'POST';
+    var r=await fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(obj)});
+    if(!r.ok)throw new Error();
+    var saved=await r.json();
+    disenoId=saved.id||disenoId||id;
+    estado.nombre=nombre;
+    hashInicial=calcHash();
+    toast('✓ Guardado');
+    // Mostrar botón Asignar si no existe
+    if(!document.getElementById('btnAsignar')){
+      var btn=document.createElement('button');
+      btn.id='btnAsignar';btn.className='btn-top btn-top-asign';
+      btn.textContent='🏷️ Asignar';btn.onclick=abrirAsignar;
+      document.getElementById('btnGuardar').before(btn);
+    }
+  }catch(e){toast('Error al guardar',true);}
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════
+function renderTodo(){renderFondo();renderEls();}
+
+function renderFondo(){
+  var bg=document.getElementById('canvasBg');
+  bg.style.background='linear-gradient('+estado.bgDireccion+','+estado.bgColor1+','+estado.bgColor2+')';
+  var ov=document.getElementById('canvasImgOverlay');
+  if(estado.bgImagen){
+    var fit=estado.bgFit||'cover';
+    var px=(estado.bgPosX!==undefined?estado.bgPosX:50)+'%';
+    var py=(estado.bgPosY!==undefined?estado.bgPosY:50)+'%';
+    var escX=(estado.bgEscalaX||100)/100;
+    var escY=(estado.bgEscalaY||100)/100;
+    ov.style.backgroundImage='url('+estado.bgImagen+')';
+    ov.style.backgroundSize=fit==='100% 100%'?'100% 100%':(fit==='contain'?'contain':'cover');
+    ov.style.backgroundPosition=px+' '+py;
+    ov.style.backgroundRepeat='no-repeat';
+    ov.style.opacity=estado.bgOpacidad/100;
+    ov.style.transform='scale('+escX+','+escY+')';
+    // Desvanecido en bordes con mask
+    var fade=estado.bgBorderFade||0;
+    if(fade>0){
+      var p1=fade+'%', p2=(100-fade)+'%';
+      var mask='linear-gradient(to bottom, transparent 0%, black '+p1+', black '+p2+', transparent 100%), linear-gradient(to right, transparent 0%, black '+p1+', black '+p2+', transparent 100%)';
+      ov.style.webkitMaskImage=mask;
+      ov.style.maskImage=mask;
+      ov.style.webkitMaskComposite='source-in';
+      ov.style.maskComposite='intersect';
+    } else {
+      ov.style.webkitMaskImage='none';ov.style.maskImage='none';
+    }
+  }else{
+    ov.style.backgroundImage='none';ov.style.opacity='1';
+    ov.style.transform='none';ov.style.webkitMaskImage='none';ov.style.maskImage='none';
+  }
+  var pv=document.getElementById('bgPreview');
+  pv.style.background='linear-gradient('+estado.bgDireccion+','+estado.bgColor1+','+estado.bgColor2+')';
+}
+
+function renderEls(){
+  var cv=document.getElementById('credCanvas');
+  cv.querySelectorAll('.el').forEach(function(e){e.remove();});
+  estado.elementos.forEach(function(el){
+    if(!el.visible)return;
+    cv.appendChild(crearDom(el));
+  });
+}
+
+function crearDom(el){
+  var d=document.createElement('div');
+  d.className='el el-'+el.tipo;
+  d.id='dom_'+el.id;
+  d.dataset.id=el.id;
+  d.style.left=el.x+'px'; d.style.top=el.y+'px';
+  d.style.width=el.w+'px'; d.style.height=el.h+'px';
+  d.style.opacity=(el.opacity!=null?el.opacity:100)/100;
+  d.style.zIndex=estado.elementos.indexOf(el)+1;
+  if(elSel===el.id)d.classList.add('selected');
+
+  // Sombra
+  if(el.sombra&&el.tipo!=='foto'){
+    d.style.filter='drop-shadow('+(el.sombraX||0)+'px '+(el.sombraY||2)+'px '+(el.sombraBlur||8)+'px '+(el.sombraColor||'rgba(0,0,0,0.8)')+')';
+  }
+
+  if(el.tipo==='texto'){
+    d.style.color=el.color||'#fff';
+    d.style.fontFamily=fuenteCSS(el.fuente);
+    d.style.fontSize=(el.fontSize||16)+'px';
+    d.style.fontWeight=el.bold?'700':'400';
+    d.style.fontStyle=el.italic?'italic':'normal';
+    d.style.textAlign=el.align||'left';
+    d.style.letterSpacing=(el.letterSpacing||0)+'px';
+    d.style.lineHeight='1.2';
+    d.style.display='flex'; d.style.alignItems='center';
+    d.style.whiteSpace='nowrap'; d.style.overflow='visible';
+    if(el.bgColor&&el.bgColor!=='transparent'){d.style.background=el.bgColor;d.style.borderRadius=(el.radio||0)+'px';}
+    if(el.borderWidth>0)d.style.border=el.borderWidth+'px '+(el.borderStyle||'solid')+' '+(el.borderColor||'#fff');
+    if(el.borderBlur>0)d.style.boxShadow='0 0 '+el.borderBlur+'px '+(el.borderColor||'#fff');
+    // Stroke
+    if(el.strokeWidth>0){
+      var sw=el.strokeWidth,sc=el.strokeColor||'#000';
+      d.style.textShadow='-'+sw+'px -'+sw+'px 0 '+sc+','+sw+'px -'+sw+'px 0 '+sc+',-'+sw+'px '+sw+'px 0 '+sc+','+sw+'px '+sw+'px 0 '+sc;
+    }
+    // Campo dinámico preview
+    var textoMostrar=el.texto||'';
+    if(el.campo==='nombre')textoMostrar='Nombre Jugador';
+    else if(el.campo==='equipo')textoMostrar='Nombre Equipo';
+    else if(el.campo==='numero')textoMostrar='#10';
+    else if(el.campo==='categoria')textoMostrar=categoria||'Categoría';
+    d.textContent=textoMostrar;
+    // Doble click editar
+    d.addEventListener('dblclick',function(e){e.stopPropagation();editarTexto(el.id);});
+  }
+
+  if(el.tipo==='foto'){
+    d.style.borderRadius=(el.radio||0)+'px';
+    d.style.background=el.bgColor||'rgba(255,255,255,0.1)';
+    d.style.overflow='hidden';
+    if(el.borderWidth>0)d.style.border=el.borderWidth+'px '+(el.borderStyle||'solid')+' '+(el.borderColor||'#fff');
+    if(el.borderBlur>0)d.style.boxShadow='0 0 '+el.borderBlur+'px '+(el.borderColor||'#fff');
+    var inner=document.createElement('div');
+    inner.style.cssText='position:absolute;inset:0;border-radius:inherit;overflow:hidden;display:flex;align-items:center;justify-content:center;';
+    if(el.src){
+      var img=document.createElement('img');
+      img.src=el.src;img.style.cssText='width:100%;height:100%;object-fit:cover;';
+      inner.appendChild(img);
+    }else{
+      inner.innerHTML='<div style="font-size:'+(Math.min(el.w,el.h)*0.4)+'px;opacity:0.5">👤</div>';
+    }
+    d.appendChild(inner);
+    // Feather
+    if(el.borderBlur>0){
+      var p1=Math.max(0,50-el.borderBlur)+'%',p2=Math.min(100,50+el.borderBlur)+'%';
+      var mask='radial-gradient(ellipse at center,black '+p1+',transparent '+p2+')';
+      inner.style.webkitMaskImage=mask;inner.style.maskImage=mask;
+    }
+    // subir foto de prueba
+    d.addEventListener('dblclick',function(e){e.stopPropagation();
+      var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+      inp.onchange=function(){
+        var file=inp.files[0];if(!file)return;
+        var rd=new FileReader();rd.onload=function(ev){
+          el.src=ev.target.result;renderEls();
+        };rd.readAsDataURL(file);
+      };inp.click();
+    });
+  }
+
+  if(el.tipo==='rect'){
+    var inner2=document.createElement('div');
+    inner2.style.cssText='position:absolute;inset:0;border-radius:'+(el.radio||0)+'px;background:'+(el.bgColor||'rgba(255,255,255,0.15)')+';overflow:hidden;display:flex;align-items:center;';
+    if(el.borderWidth>0)inner2.style.border=el.borderWidth+'px '+(el.borderStyle||'solid')+' '+(el.borderColor||'rgba(255,255,255,0.5)');
+    if(el.borderBlur>0)inner2.style.boxShadow='0 0 '+el.borderBlur+'px '+(el.borderColor||'#fff');
+    if(el.backdropBlur>0)inner2.style.backdropFilter='blur('+el.backdropBlur+'px)';
+    if(el.sombra)inner2.style.boxShadow=(inner2.style.boxShadow?inner2.style.boxShadow+',':('' ))+el.sombraX+'px '+el.sombraY+'px '+el.sombraBlur+'px '+el.sombraColor;
+    // texto del campo
+    if(el.campo&&el.campo!=='foto'&&el.campo!==''){
+      var ejs={nombre:'Nombre Jugador',equipo:'Nombre Equipo',numero:'#10',categoria:categoria||'Categoría'};
+      var sp=document.createElement('div');
+      sp.style.cssText='padding:0 10px;font-family:'+fuenteCSS(el.fuente||'outfit')+';font-size:'+(el.fontSize||28)+'px;font-weight:'+(el.bold?'900':'700')+';color:'+(el.color||'#111111')+';width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+      if(el.align)sp.style.textAlign=el.align;
+      sp.textContent=ejs[el.campo]||el.campo;
+      inner2.appendChild(sp);
+    }
+    d.appendChild(inner2);
+  }
+
+  if(el.tipo==='linea'){
+    var lg=el.grosor||2;
+    var ln=document.createElement('div');
+    ln.style.cssText='position:absolute;left:0;right:0;height:'+lg+'px;top:'+((el.h-lg)/2)+'px;background:'+(el.color||'rgba(255,255,255,0.7)')+';border-radius:2px;';
+    if(el.lineBlur>0)ln.style.boxShadow='0 0 '+el.lineBlur+'px '+(el.color||'#fff');
+    d.appendChild(ln);
+  }
+
+  // Handles resize
+  ['tl','tc','tr','ml','mr','bl','bc','br'].forEach(function(h){
+    var rh=document.createElement('div');
+    rh.className='rh rh-'+h;rh.dataset.h=h;
+    d.appendChild(rh);
+  });
+
+  // Eventos
+  d.addEventListener('mousedown',function(e){
+    if(e.target.classList.contains('rh')){
+      e.stopPropagation();e.preventDefault();
+      var rect=document.getElementById('credCanvas').getBoundingClientRect();
+      rsz={on:true,id:el.id,h:e.target.dataset.h,
+           sx:e.clientX,sy:e.clientY,
+           ox:el.x,oy:el.y,ow:el.w,oh:el.h,
+           scaleX:CANVAS_W/rect.width,scaleY:CANVAS_H/rect.height};
+      return;
+    }
+    e.stopPropagation();e.preventDefault();
+    seleccionar(el.id);
+    var rect=document.getElementById('credCanvas').getBoundingClientRect();
+    drag={on:true,id:el.id,sx:e.clientX,sy:e.clientY,ox:el.x,oy:el.y,
+          scaleX:CANVAS_W/rect.width,scaleY:CANVAS_H/rect.height};
+  });
+
+  return d;
+}
+
+// ═══════════════════════════════════════════════
+//  DRAG & RESIZE
+// ═══════════════════════════════════════════════
+document.addEventListener('mousemove',function(e){
+  if(drag.on){
+    var el=getEl(drag.id);if(!el)return;
+    var dx=(e.clientX-drag.sx)*drag.scaleX, dy=(e.clientY-drag.sy)*drag.scaleY;
+    el.x=Math.max(0,Math.min(CANVAS_W-el.w, drag.ox+dx));
+    el.y=Math.max(0,Math.min(CANVAS_H-el.h, drag.oy+dy));
+    var d=document.getElementById('dom_'+drag.id);
+    if(d){d.style.left=el.x+'px';d.style.top=el.y+'px';}
+    actualizarPosProps();
+  }
+  if(rsz.on){
+    var el=getEl(rsz.id);if(!el)return;
+    var dx=(e.clientX-rsz.sx)*rsz.scaleX, dy=(e.clientY-rsz.sy)*rsz.scaleY;
+    var h=rsz.h, nx=rsz.ox,ny=rsz.oy,nw=rsz.ow,nh=rsz.oh;
+    if(h==='br'||h==='mr'||h==='tr')nw=Math.max(20,rsz.ow+dx);
+    if(h==='bl'||h==='ml'||h==='tl'){nw=Math.max(20,rsz.ow-dx);nx=rsz.ox+(rsz.ow-nw);}
+    if(h==='bl'||h==='bc'||h==='br')nh=Math.max(10,rsz.oh+dy);
+    if(h==='tl'||h==='tc'||h==='tr'){nh=Math.max(10,rsz.oh-dy);ny=rsz.oy+(rsz.oh-nh);}
+    el.x=nx;el.y=ny;el.w=nw;el.h=nh;
+    var d=document.getElementById('dom_'+rsz.id);
+    if(d){d.style.left=nx+'px';d.style.top=ny+'px';d.style.width=nw+'px';d.style.height=nh+'px';}
+    actualizarPosProps();
+  }
+});
+document.addEventListener('mouseup',function(){drag.on=false;rsz.on=false;});
+
+// ═══════════════════════════════════════════════
+//  CANVAS CLICK / INSERT
+// ═══════════════════════════════════════════════
+function canvasClick(e){
+  if(e.target===document.getElementById('canvasArea')||e.target===document.getElementById('canvasWrap')){
+    deseleccionar();
+  }
+}
+
+function canvasMD(e){
+  if(!toolActiva)return;
+  if(!e.target.closest('#credCanvas'))return;
+  e.stopPropagation();e.preventDefault();
+  var rect=document.getElementById('credCanvas').getBoundingClientRect();
+  var x=Math.max(0,(e.clientX-rect.left)*(CANVAS_W/rect.width));
+  var y=Math.max(0,(e.clientY-rect.top)*(CANVAS_H/rect.height));
+  insertarEn(toolActiva,x,y);
+  setTool(null);
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){setTool(null);}
+  if((e.key==='Delete'||e.key==='Backspace')&&elSel&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){
+    eliminarSel();
+  }
+});
+
+// ═══════════════════════════════════════════════
+//  HERRAMIENTAS
+// ═══════════════════════════════════════════════
+function setTool(tipo){
+  toolActiva=tipo;
+  document.querySelectorAll('.tool-btn').forEach(function(b){b.classList.remove('active');});
+  if(tipo){
+    var b=document.getElementById('tool-'+tipo);
+    if(b)b.classList.add('active');
+    document.getElementById('canvasArea').classList.add('tool-activa');
+    document.getElementById('insertHint').classList.add('show');
+  }else{
+    document.getElementById('canvasArea').classList.remove('tool-activa');
+    document.getElementById('insertHint').classList.remove('show');
+  }
+}
+
+function insertarEn(tipo,x,y){
+  var id='el_'+Date.now();
+  var el={id:id,tipo:tipo,x:Math.round(x),y:Math.round(y),w:180,h:50,visible:true,opacity:100,nombre:tipo,
+          borderWidth:0,borderColor:'rgba(255,255,255,0.5)',borderStyle:'solid',borderBlur:0,
+          radio:0,sombra:false,sombraBlur:8,sombraColor:'rgba(0,0,0,0.8)',sombraX:0,sombraY:2,campo:''};
+  if(tipo==='texto'){
+    el.w=200;el.h=40;
+    el.texto='Texto';el.fuente='bebas';el.fontSize=24;el.color='#ffffff';
+    el.bold=false;el.italic=false;el.align='left';el.letterSpacing=0;
+    el.strokeWidth=0;el.strokeColor='#000000';el.bgColor='transparent';
+  }
+  if(tipo==='rect'){
+    el.w=200;el.h=60;
+    el.bgColor='rgba(255,255,255,0.15)';el.backdropBlur=0;
+    el.color='#111111';el.fontSize=28;el.fuente='outfit';el.bold=false;el.align='left';
+  }
+  if(tipo==='linea'){el.w=200;el.h=20;el.grosor=2;el.color='rgba(255,255,255,0.7)';el.lineBlur=0;}
+  if(tipo==='foto'){
+    el.w=120;el.h=150;el.radio=8;el.src=null;el.bgColor='rgba(255,255,255,0.1)';
+    el.campo='foto';el.feather=0;
+  }
+  estado.elementos.push(el);
+  renderEls();
+  seleccionar(id);
+}
+
+// ═══════════════════════════════════════════════
+//  SELECCIÓN
+// ═══════════════════════════════════════════════
+function seleccionar(id){
+  elSel=id;
+  document.querySelectorAll('.el').forEach(function(d){d.classList.remove('selected');});
+  var d=document.getElementById('dom_'+id);if(d)d.classList.add('selected');
+  renderProps();
+}
+function deseleccionar(){
+  elSel=null;
+  document.querySelectorAll('.el').forEach(function(d){d.classList.remove('selected');});
+  renderProps();
+}
+function eliminarSel(){
+  if(!elSel)return;
+  estado.elementos=estado.elementos.filter(function(e){return e.id!==elSel;});
+  elSel=null;renderEls();renderProps();
+}
+
+// ═══════════════════════════════════════════════
+//  PROPIEDADES
+// ═══════════════════════════════════════════════
+function renderProps(){
+  var empty=document.getElementById('propsEmpty');
+  var content=document.getElementById('propsContent');
+  var title=document.getElementById('propsTitle');
+  var delBtn=document.getElementById('propsDelBtn');
+  var el=getEl(elSel);
+  if(!el){
+    empty.style.display='';content.style.display='none';
+    title.textContent='PROPIEDADES';delBtn.style.display='none';return;
+  }
+  empty.style.display='none';content.style.display='';
+  title.textContent=(el.nombre||el.tipo).toUpperCase();
+  delBtn.style.display='';
+  var h='';
+
+  // Posición y tamaño
+  h+='<div class="prop-group"><div class="prop-group-title">Posición y Tamaño</div>';
+  h+='<div class="prop-row"><span class="prop-lbl">X</span><input class="prop-input w52" id="px" type="number" value="'+Math.round(el.x)+'" oninput="setProp(\'x\',+this.value)">';
+  h+='<span class="prop-lbl" style="padding-left:4px">Y</span><input class="prop-input w52" id="py" type="number" value="'+Math.round(el.y)+'" oninput="setProp(\'y\',+this.value)"></div>';
+  h+='<div class="prop-row"><span class="prop-lbl">W</span><input class="prop-input w52" id="pw" type="number" value="'+Math.round(el.w)+'" oninput="setProp(\'w\',+this.value)">';
+  h+='<span class="prop-lbl" style="padding-left:4px">H</span><input class="prop-input w52" id="ph" type="number" value="'+Math.round(el.h)+'" oninput="setProp(\'h\',+this.value)"></div>';
+  h+='<div class="prop-row"><span class="prop-lbl">Opacidad</span><input type="range" class="prop-range" min="0" max="100" value="'+(el.opacity!=null?el.opacity:100)+'" oninput="setProp(\'opacity\',+this.value);document.getElementById(\'popval\').textContent=this.value+\'%\'"><span class="prop-range-val" id="popval">'+(el.opacity!=null?el.opacity:100)+'%</span></div>';
+  h+='</div>';
+
+  // Campo dinámico
+  h+='<div class="campo-box"><div class="campo-box-title">🏷️ Campo Dinámico</div>';
+  h+='<div class="prop-row"><select class="prop-select" style="border-color:rgba(224,184,74,0.4)" onchange="setProp(\'campo\',this.value);renderEls()">';
+  CAMPOS.forEach(function(c){h+='<option value="'+c.id+'"'+(el.campo===c.id?' selected':'')+'>'+c.label+'</option>';});
+  h+='</select></div>';
+  if(el.campo&&el.campo!==''){
+    var desc={foto:'La foto del jugador irá aquí.',nombre:'Nombre del jugador.',equipo:'Nombre del equipo.',numero:'Número de playera.',categoria:'Nombre de la categoría.'};
+    h+='<div style="font-size:0.67rem;color:#e0b84a;padding:2px 0">'+(desc[el.campo]||'')+'</div>';
+  }
+  h+='</div>';
+
+  // TEXTO
+  if(el.tipo==='texto'){
+    h+='<div class="prop-group"><div class="prop-group-title">Texto</div>';
+    h+='<div class="prop-row"><input class="prop-input wfull" type="text" value="'+esc(el.texto||'')+'" oninput="setProp(\'texto\',this.value)"></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Color</span><input type="color" class="prop-color" value="'+colorToHex(el.color||'#fff')+'" oninput="setProp(\'color\',this.value)">';
+    h+='<span class="prop-lbl" style="margin-left:4px">Tamaño</span><input class="prop-input w52" type="number" value="'+(el.fontSize||16)+'" min="6" max="200" oninput="setProp(\'fontSize\',+this.value)"></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Fuente</span><select class="prop-select" onchange="setProp(\'fuente\',this.value)">';
+    var cats=[...new Set(FUENTES.map(function(f){return f.cat;}))];
+    cats.forEach(function(cat){h+='<optgroup label="'+cat+'">'; FUENTES.filter(function(f){return f.cat===cat;}).forEach(function(f){h+='<option value="'+f.id+'"'+(f.id===el.fuente?' selected':'')+'>'+f.label+'</option>';});h+='</optgroup>';});
+    h+='</select></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Estilo</span><div class="prop-toggles">';
+    h+='<button class="prop-toggle'+(el.bold?' on':'')+'" onclick="setProp(\'bold\',!getEl(elSel).bold);renderEls();renderProps()"><b>B</b></button>';
+    h+='<button class="prop-toggle'+(el.italic?' on':'')+'" onclick="setProp(\'italic\',!getEl(elSel).italic);renderEls();renderProps()"><i>I</i></button>';
+    h+='<button class="prop-toggle'+(el.align==="left"?" on":"")+'" onclick="setProp(\'align\',\'left\');renderEls();renderProps()">L</button>';
+    h+='<button class="prop-toggle'+(el.align==="left"?" on":"")+'" onclick="setProp(\'align\',\'center\');renderEls();renderProps()">C</button>';
+    h+='<button class="prop-toggle'+(el.align==="left"?" on":"")+'" onclick="setProp(\'align\',\'right\');renderEls();renderProps()">R</button>';
+    h+='</div></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Espaciado</span><input type="range" class="prop-range" min="-5" max="30" value="'+(el.letterSpacing||0)+'" oninput="setProp(\'letterSpacing\',+this.value);document.getElementById(\'lsval\').textContent=this.value+\'px\'"><span class="prop-range-val" id="lsval">'+(el.letterSpacing||0)+'px</span></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Contorno</span><input type="color" class="prop-color" value="'+colorToHex(el.strokeColor||'#000000')+'" oninput="setProp(\'strokeColor\',this.value)">';
+    h+='<span class="prop-lbl" style="margin-left:4px">Grosor</span><input class="prop-input w52" type="number" value="'+(el.strokeWidth||0)+'" min="0" max="20" oninput="setProp(\'strokeWidth\',+this.value)"></div>';
+    h+='</div>';
+    h+=htmlBorde(el,true);h+=htmlSombra(el);
+  }
+
+  // FOTO
+  if(el.tipo==='foto'){
+    h+='<div class="prop-group"><div class="prop-group-title">Foto Jugador</div>';
+    h+='<div class="prop-row"><button onclick="dblClickFoto(\''+el.id+'\')" style="flex:1;padding:5px;background:var(--sel-bg);border:1px solid rgba(79,142,247,.35);color:var(--accent);border-radius:6px;font-size:0.72rem;font-weight:700;cursor:pointer;">📷 Subir foto de prueba</button></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Feather</span><input type="range" class="prop-range" min="0" max="40" value="'+(el.borderBlur||0)+'" oninput="setProp(\'borderBlur\',+this.value);document.getElementById(\'ffval\').textContent=this.value+\'px\'"><span class="prop-range-val" id="ffval">'+(el.borderBlur||0)+'px</span></div>';
+    h+='</div>';
+    h+=htmlBorde(el,true);h+=htmlSombra(el);
+  }
+
+  // RECT
+  if(el.tipo==='rect'){
+    h+='<div class="prop-group"><div class="prop-group-title">Relleno</div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Color</span><input type="color" class="prop-color" value="'+colorToHex(el.bgColor||'#ffffff')+'" oninput="setProp(\'bgColor\',this.value)">';
+    h+='<button onclick="setProp(\'bgColor\',\'transparent\')" style="margin-left:6px;padding:2px 8px;background:var(--surface3);border:1px solid var(--border2);color:var(--text2);border-radius:5px;font-size:0.68rem;cursor:pointer">Sin relleno</button></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Cristal</span><input type="range" class="prop-range" min="0" max="30" value="'+(el.backdropBlur||0)+'" oninput="setProp(\'backdropBlur\',+this.value);document.getElementById(\'bbval\').textContent=this.value+\'px\'"><span class="prop-range-val" id="bbval">'+(el.backdropBlur||0)+'px</span></div></div>';
+    h+='<div class="prop-group"><div class="prop-group-title">Texto del campo</div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Color</span><input type="color" class="prop-color" value="'+colorToHex(el.color||'#111111')+'" oninput="setProp(\'color\',this.value)"></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Tamaño</span><input class="prop-input w52" type="number" value="'+(el.fontSize||28)+'" min="6" max="120" oninput="setProp(\'fontSize\',+this.value)"></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Fuente</span><select class="prop-select" onchange="setProp(\'fuente\',this.value)">';
+    var cats3=[...new Set(FUENTES.map(function(f){return f.cat;}))];
+    cats3.forEach(function(cat){h+='<optgroup label="'+cat+'">'; FUENTES.filter(function(f){return f.cat===cat;}).forEach(function(f){h+='<option value="'+f.id+'"'+(f.id===el.fuente?' selected':'')+'>'+f.label+'</option>';});h+='</optgroup>';});
+    h+='</select></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Alineación</span><div class="prop-toggles">';
+    h+='<button class="prop-toggle'+(el.align==="left"?" on":"")+'" onclick="setProp(\'align\',\'left\');renderEls();renderProps()">L</button>';
+    h+='<button class="prop-toggle'+(el.align==="left"?" on":"")+'" onclick="setProp(\'align\',\'center\');renderEls();renderProps()">C</button>';
+    h+='<button class="prop-toggle'+(el.align==="left"?" on":"")+'" onclick="setProp(\'align\',\'right\');renderEls();renderProps()">R</button>';
+    h+='</div></div></div>';
+    h+=htmlBorde(el,false);h+=htmlSombra(el);
+  }
+
+  // LINEA
+  if(el.tipo==='linea'){
+    h+='<div class="prop-group"><div class="prop-group-title">Línea</div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Color</span><input type="color" class="prop-color" value="'+colorToHex(el.color||'#ffffff')+'" oninput="setProp(\'color\',this.value)">';
+    h+='<span class="prop-lbl" style="margin-left:4px">Grosor</span><input class="prop-input w52" type="number" value="'+(el.grosor||2)+'" min="1" max="30" oninput="setProp(\'grosor\',+this.value)"></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Glow</span><input type="range" class="prop-range" min="0" max="30" value="'+(el.lineBlur||0)+'" oninput="setProp(\'lineBlur\',+this.value);document.getElementById(\'lgval\').textContent=this.value+\'px\'"><span class="prop-range-val" id="lgval">'+(el.lineBlur||0)+'px</span></div>';
+    h+='</div>';h+=htmlBorde(el,true);h+=htmlSombra(el);
+  }
+
+  content.innerHTML=h;
+}
+
+function htmlBorde(el,conRelleno){
+  var h='<div class="prop-group"><div class="prop-group-title">Borde</div>';
+  h+='<div class="prop-row"><span class="prop-lbl">Color</span><input type="color" class="prop-color" value="'+colorToHex(el.borderColor||'#ffffff')+'" oninput="setProp(\'borderColor\',this.value)">';
+  h+='<span class="prop-lbl" style="margin-left:4px">Grosor</span><input class="prop-input w52" type="number" value="'+(el.borderWidth||0)+'" min="0" max="30" oninput="setProp(\'borderWidth\',+this.value)"></div>';
+  h+='<div class="prop-row"><span class="prop-lbl">Estilo</span><select class="prop-select" onchange="setProp(\'borderStyle\',this.value)">';
+  ['solid','dashed','dotted','double','groove','ridge'].forEach(function(s){h+='<option value="'+s+'"'+(el.borderStyle===s?' selected':'')+'>'+s+'</option>';});
+  h+='</select></div>';
+  h+='<div class="prop-row"><span class="prop-lbl">Glow</span><input type="range" class="prop-range" min="0" max="40" value="'+(el.borderBlur||0)+'" oninput="setProp(\'borderBlur\',+this.value);document.getElementById(\'bblval\').textContent=this.value+\'px\'"><span class="prop-range-val" id="bblval">'+(el.borderBlur||0)+'px</span></div>';
+  h+='<div class="prop-row"><span class="prop-lbl">Radio</span><input type="range" class="prop-range" min="0" max="300" value="'+(el.radio||0)+'" oninput="setProp(\'radio\',+this.value);document.getElementById(\'bradval\').textContent=this.value+\'px\'"><span class="prop-range-val" id="bradval">'+(el.radio||0)+'px</span></div></div>';
+  if(conRelleno){
+    h+='<div class="prop-group"><div class="prop-group-title">Relleno fondo</div>';
+    h+='<div class="prop-row"><span class="prop-lbl">Color</span><input type="color" class="prop-color" value="'+colorToHex(el.bgColor||'#ffffff')+'" oninput="setProp(\'bgColor\',this.value)">';
+    h+='<button onclick="setProp(\'bgColor\',\'transparent\')" style="margin-left:6px;padding:2px 8px;background:var(--surface3);border:1px solid var(--border2);color:var(--text2);border-radius:5px;font-size:0.68rem;cursor:pointer">Sin relleno</button></div></div>';
+  }
+  return h;
+}
+
+function htmlSombra(el){
+  var h='<div class="prop-group"><div class="prop-group-title">Sombra</div>';
+  h+='<div class="prop-row"><button class="prop-toggle'+(el.sombra?' on':'')+'" style="flex:1" onclick="setProp(\'sombra\',!getEl(elSel).sombra);renderEls();renderProps()">'+(el.sombra?'✓ Con sombra':'Sin sombra')+'</button></div>';
+  if(el.sombra){
+    h+='<div class="prop-row"><span class="prop-lbl">Color</span><input type="color" class="prop-color" value="'+colorToHex(el.sombraColor||'#000000')+'" oninput="setProp(\'sombraColor\',this.value)">';
+    h+='<span class="prop-lbl" style="margin-left:4px">Blur</span><input class="prop-input w52" type="number" value="'+(el.sombraBlur||8)+'" min="0" max="80" oninput="setProp(\'sombraBlur\',+this.value)"></div>';
+    h+='<div class="prop-row"><span class="prop-lbl">X</span><input class="prop-input w52" type="number" value="'+(el.sombraX||0)+'" min="-40" max="40" oninput="setProp(\'sombraX\',+this.value)">';
+    h+='<span class="prop-lbl" style="margin-left:4px">Y</span><input class="prop-input w52" type="number" value="'+(el.sombraY||3)+'" min="-40" max="40" oninput="setProp(\'sombraY\',+this.value)"></div>';
+  }
+  return h+'</div>';
+}
+
+function setProp(prop,val){
+  var el=getEl(elSel);if(!el)return;
+  el[prop]=val;
+  var d=document.getElementById('dom_'+el.id);
+  if(!d)return;
+  if(prop==='x'){d.style.left=val+'px';return;}
+  if(prop==='y'){d.style.top=val+'px';return;}
+  if(prop==='w'){d.style.width=val+'px';return;}
+  if(prop==='h'){d.style.height=val+'px';return;}
+  if(prop==='opacity'){d.style.opacity=val/100;return;}
+  // Re-render el elemento
+  var nuevo=crearDom(el);d.replaceWith(nuevo);
+}
+
+function actualizarPosProps(){
+  var el=getEl(elSel);if(!el)return;
+  var px=document.getElementById('px'),py=document.getElementById('py');
+  var pw=document.getElementById('pw'),ph=document.getElementById('ph');
+  if(px)px.value=Math.round(el.x);if(py)py.value=Math.round(el.y);
+  if(pw)pw.value=Math.round(el.w);if(ph)ph.value=Math.round(el.h);
+}
+
+function editarTexto(id){
+  var el=getEl(id);if(!el||el.tipo!=='texto')return;
+  var d=document.getElementById('dom_'+id);if(!d)return;
+  d.contentEditable='true';d.focus();
+  d.style.cursor='text';d.style.outline='2px solid var(--sel)';
+  d.addEventListener('blur',function fin(){
+    el.texto=d.textContent;
+    d.contentEditable='false';d.style.cursor='move';
+    renderEls();seleccionar(id);
+    d.removeEventListener('blur',fin);
+  },{once:true});
+}
+
+function dblClickFoto(id){
+  var el=getEl(id);if(!el)return;
+  var inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=function(){
+    var file=inp.files[0];if(!file)return;
+    var rd=new FileReader();rd.onload=function(ev){el.src=ev.target.result;renderEls();};
+    rd.readAsDataURL(file);
+  };inp.click();
+}
+
+// ═══════════════════════════════════════════════
+//  FONDO
+// ═══════════════════════════════════════════════
+function actualizarFondo(){
+  estado.bgColor1=document.getElementById('bgColor1').value;
+  estado.bgColor2=document.getElementById('bgColor2').value;
+  estado.bgOpacidad=parseInt(document.getElementById('bgImgOp').value)||80;
+  renderFondo();
+}
+
+function cargarImgFondo(inp){
+  var file=inp.files[0];if(!file)return;
+  var rd=new FileReader();
+  rd.onload=function(e){
+    estado.bgImagen=e.target.result;
+    var wrap=document.getElementById('imgPreviewWrap');
+    var th=document.getElementById('bgImgThumb');
+    th.src=estado.bgImagen;wrap.classList.add('show');
+    document.getElementById('bgImgAreaTxt').textContent='📷 Cambiar imagen';
+    renderFondo();
+  };rd.readAsDataURL(file);
+}
+
+function quitarImgFondo(){
+  estado.bgImagen=null;estado.bgBorderFade=0;estado.bgEscalaX=100;estado.bgEscalaY=100;
+  estado.bgPosX=50;estado.bgPosY=50;
+  var wrap=document.getElementById('imgPreviewWrap');wrap.classList.remove('show');
+  document.getElementById('bgImgInput').value='';
+  document.getElementById('bgImgAreaTxt').textContent='📷 Subir imagen de fondo';
+  // Reset sliders
+  ['bgImgOp','bgPosX','bgPosY','bgEscala','bgFade'].forEach(function(id){
+    var el=document.getElementById(id);if(el){el.value=id==='bgImgOp'?80:id==='bgEscala'?100:id.includes('Pos')?50:0;}
+  });
+  document.getElementById('bgOpVal').textContent='80%';
+  document.getElementById('bgPXVal').textContent='50%';
+  document.getElementById('bgPYVal').textContent='50%';
+  document.getElementById('bgEscVal').textContent='100%';
+  document.getElementById('bgFadeVal').textContent='0%';
+  renderFondo();
+}
+
+// ═══════════════════════════════════════════════
+//  TABS FONDO
+// ═══════════════════════════════════════════════
+function setFondoTab(tab){
+  document.querySelectorAll('.fondo-tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.fondo-panel').forEach(function(p){p.classList.remove('show');});
+  document.getElementById('tab-'+tab).classList.add('on');
+  document.getElementById('panel-'+tab).classList.add('show');
+}
+
+// ═══════════════════════════════════════════════
+//  ZOOM
+// ═══════════════════════════════════════════════
+function cambiarZoom(delta){
+  zoom=Math.max(30,Math.min(200,zoom+delta));
+  document.getElementById('credCanvas').style.transform='scale('+zoom/100+')';
+  document.getElementById('zoomVal').textContent=zoom+'%';
+}
+
+// ═══════════════════════════════════════════════
+//  ASIGNACIÓN
+// ═══════════════════════════════════════════════
+async function abrirAsignar(){
+  if(!disenoId){await guardarDiseno();setTimeout(abrirAsignar,400);return;}
+  var lista=document.getElementById('listaCats');
+  lista.innerHTML='<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:8px">Cargando...</div>';
+  document.getElementById('modalAsignar').classList.add('open');
+  try{
+    var r=await fetch(API+'/categorias');
+    var cats=await r.json();
+    // Load ALL designs to check which ones have disenoId in their asignado_a array
+    var todosDisenos = [];
+    try { var rd = await fetch(API+'/disenos'); todosDisenos = await rd.json(); } catch(e) {}
+    var disenoActual = todosDisenos.find(function(d){ return String(d.id)===String(disenoId); });
+    var yaAsignados = (disenoActual && Array.isArray(disenoActual.asignado_a)) ? disenoActual.asignado_a : [];
+    var asignaciones = {};
+    cats.forEach(function(cat){
+      var nombre = cat.nombre||String(cat.id);
+      asignaciones[nombre] = yaAsignados.indexOf(nombre) !== -1 ? disenoId : null;
+    });
+    lista.innerHTML='';
+    if(!cats.length){lista.innerHTML='<div style="color:var(--text3);font-size:0.8rem;text-align:center;padding:8px">No hay categorías.</div>';return;}
+    cats.forEach(function(cat){
+      var nombre=cat.nombre||cat.id;
+      var asignado=asignaciones[nombre]===disenoId;
+      var row=document.createElement('label');
+      row.className='asign-row';
+      row.innerHTML='<input type="checkbox" data-cat="'+esc(nombre)+'" '+(asignado?'checked':'')+' style="width:16px;height:16px;accent-color:var(--gold);cursor:pointer"><span style="flex:1;font-weight:600;font-size:0.84rem">'+esc(nombre)+'</span>'+(asignado?'<span class="asign-chip">✓ Asignado</span>':'');
+      lista.appendChild(row);
+    });
+  }catch(e){lista.innerHTML='<div style="color:var(--red);font-size:0.8rem;text-align:center;padding:8px">Error al cargar.</div>';}
+}
+
+function cerrarAsignar(){document.getElementById('modalAsignar').classList.remove('open');}
+
+async function confirmarAsignar(){
+  if(!disenoId)return;
+  var checks=document.querySelectorAll('#listaCats input[type="checkbox"]');
+  // Build full list of selected categories
+  var seleccionadas=[];
+  checks.forEach(function(cb){ if(cb.checked) seleccionadas.push(cb.dataset.cat); });
+  try{
+    // Send full updated asignado_a array via PUT
+    await fetch(API+'/disenos/'+encodeURIComponent(disenoId)+'/asignar',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({categorias: seleccionadas})
+    });
+    toast('✓ Asignación guardada');
+  }catch(e){toast('Error al asignar',true);}
+  cerrarAsignar();
+}
+
+// ═══════════════════════════════════════════════
+//  VOLVER / SALIDA
+// ═══════════════════════════════════════════════
+function volverConConfirmacion(){
+  if(calcHash()!==hashInicial)document.getElementById('modalSalida').classList.add('open');
+  else history.back();
+}
+function guardarYSalir(){guardarDiseno().then(function(){setTimeout(function(){history.back();},500);});}
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+cargarDiseno().then(function(){
+  hashInicial=calcHash();
+  if(disenoId){
+    var btn=document.createElement('button');
+    btn.id='btnAsignar';btn.className='btn-top btn-top-asign';
+    btn.textContent='🏷️ Asignar';btn.onclick=abrirAsignar;
+    document.getElementById('btnGuardar').before(btn);
+  }
+});
+</script>
+</body>
+</html>

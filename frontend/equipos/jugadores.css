@@ -1,0 +1,522 @@
+/* =============================================
+   JUGADORES · FUT 7 EL JAGUAR  (reescrito)
+   ============================================= */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg:         #07101e;
+    --bg-card:    rgba(255,255,255,0.04);
+    --bg-card2:   rgba(255,255,255,0.07);
+    --border:     rgba(255,255,255,0.08);
+    --text:       #ffffff;
+    --text2:      rgba(255,255,255,0.55);
+    --muted:      rgba(255,255,255,0.28);
+    --gold:       #c8a84b;
+    --gold-dim:   rgba(200,168,75,0.18);
+    --accent:     #3b82f6;
+    --accent-dim: rgba(59,130,246,0.15);
+    --green:      #22c55e;
+    --red:        #ef4444;
+    --red-dim:    rgba(239,68,68,0.12);
+    --shadow:     rgba(0,0,0,0.7);
+    --sw-off:     rgba(239,68,68,0.55);
+    --sw-on:      #22c55e;
+}
+
+/* ── Tema claro ── */
+[data-theme="light"] {
+    --bg:         #f0f4f8;
+    --bg-card:    rgba(0,0,0,0.04);
+    --bg-card2:   rgba(0,0,0,0.06);
+    --border:     rgba(0,0,0,0.10);
+    --text:       #0d1b2e;
+    --text2:      rgba(13,27,46,0.60);
+    --muted:      rgba(13,27,46,0.35);
+    --shadow:     rgba(0,0,0,0.15);
+    --sw-off:     rgba(239,68,68,0.55);
+    --sw-on:      #22c55e;
+}
+
+[data-theme="light"] .stadium-bg {
+    background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(200,230,200,0.4) 0%, transparent 70%),
+                linear-gradient(180deg, #e8f0f8 0%, #f0f4f8 100%);
+}
+[data-theme="light"] .header {
+    background: rgba(240,244,248,0.95);
+}
+[data-theme="light"] .modal-jugador,
+[data-theme="light"] .modal-simple {
+    background: #ffffff;
+}
+
+html, body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ── Fondo ── */
+.stadium-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    background: radial-gradient(ellipse 80% 60% at 50% 30%, rgba(15,40,15,0.5) 0%, transparent 70%),
+                linear-gradient(180deg, #07101e 0%, #081520 100%);
+}
+.pitch-lines { position: absolute; inset: 0; width: 100%; height: 100%; color: #0d1f0d; }
+.particle {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    animation: pFloat linear infinite; opacity: 0;
+}
+@keyframes pFloat {
+    0%   { transform: translateY(110vh) scale(0); opacity: 0; }
+    8%   { opacity: .8; }
+    92%  { opacity: .3; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+}
+
+/* ── Header ── */
+.header {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .8rem 2rem;
+    background: rgba(7,16,30,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+}
+.header-left, .header-right { flex: 1; }
+.header-right { display: flex; justify-content: flex-end; }
+.header-center { display: flex; align-items: center; gap: .8rem; }
+.team-emblem { width: 40px; height: 46px; flex-shrink: 0; filter: drop-shadow(0 4px 12px rgba(59,130,246,.6)); }
+.team-emblem svg { width: 100%; height: 100%; }
+.header-equipo { font-family: 'Bebas Neue', cursive; font-size: 1.3rem; letter-spacing: 4px; line-height: 1; }
+.header-cat    { font-size: .58rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-top: 2px; }
+
+.header-stats {
+    display: flex; align-items: center; gap: .5rem;
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: .45rem 1rem;
+}
+.hstat { display: flex; flex-direction: column; align-items: center; }
+.hstat-num { font-family: 'Bebas Neue', cursive; font-size: 1.3rem; line-height: 1; }
+.hstat.green .hstat-num { color: var(--green); }
+.hstat.red   .hstat-num { color: var(--red); }
+.hstat.gold  .hstat-num { color: var(--gold); }
+.hstat-lbl { font-size: .52rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.hstat-sep { width: 1px; height: 26px; background: var(--border); }
+
+.btn-volver {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text2); padding: .55rem 1.1rem; border-radius: 10px;
+    font-family: 'Outfit', sans-serif; font-size: .8rem; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+}
+.btn-volver:hover { border-color: var(--accent); color: var(--text); }
+
+/* ── Banner ── */
+.team-banner {
+    position: relative; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 2.5rem;
+    border-bottom: 1px solid var(--border); overflow: hidden;
+}
+.team-banner::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--team-color-alpha, rgba(59,130,246,.15)) 0%, transparent 60%);
+    pointer-events: none;
+}
+.banner-left  { display: flex; align-items: center; gap: 1.2rem; z-index: 1; }
+.banner-right { display: flex; align-items: center; gap: .9rem; z-index: 1; flex-wrap: wrap; }
+.banner-jersey { width: 56px; height: 56px; filter: drop-shadow(0 6px 16px rgba(0,0,0,.4)); animation: jFloat 4s ease-in-out infinite; }
+.banner-jersey svg { width: 100%; height: 100%; }
+@keyframes jFloat { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-5px) rotate(2deg); } }
+.banner-nombre { font-family: 'Bebas Neue', cursive; font-size: 2rem; letter-spacing: 5px; line-height: 1; }
+.banner-cat    { font-size: .68rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text2); margin-top: 3px; }
+.banner-stat   { text-align: center; }
+.banner-stat-num { font-family: 'Bebas Neue', cursive; font-size: 2.2rem; line-height: 1; }
+.banner-stat-lbl { font-size: .62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.banner-divider  { width: 1px; height: 40px; background: var(--border); }
+
+.btn-banner {
+    display: flex; align-items: center; gap: .5rem;
+    padding: .75rem 1.4rem; border: none; border-radius: 12px; color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 700;
+    letter-spacing: .5px; cursor: pointer; transition: all .25s;
+}
+.btn-nuevo  { background: linear-gradient(135deg, var(--green), #15803d); box-shadow: 0 4px 16px rgba(34,197,94,.3); }
+.btn-nuevo:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(34,197,94,.5); }
+.btn-diseno { background: linear-gradient(135deg, #c8a84b, #a07828); color: #000; box-shadow: 0 4px 16px rgba(200,168,75,.3); }
+.btn-diseno:hover { transform: translateY(-2px); }
+.btn-qr     { background: var(--bg-card); border: 1px solid var(--border); color: var(--gold); }
+.btn-qr:hover { border-color: var(--gold); }
+.btn-print  { background: var(--bg-card); border: 1px solid var(--border); color: var(--text2); }
+.btn-print:hover { border-color: var(--accent); color: var(--text); }
+
+/* ── Container / Grid ── */
+.container {
+    max-width: 1280px; margin: 0 auto;
+    padding: 2rem 1.5rem; position: relative; z-index: 10;
+}
+.tarjetas-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.4rem;
+}
+
+/* ── Tarjeta jugador ── */
+.jcard {
+    position: relative; border-radius: 16px; overflow: hidden;
+    background: var(--bg-card2);
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 24px var(--shadow);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease;
+    animation: cardIn .45s cubic-bezier(.22,1,.36,1) both;
+}
+.jcard:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 48px var(--shadow), 0 0 0 1px rgba(255,255,255,.1);
+    z-index: 10;
+}
+.jcard.baja { opacity: .45; filter: grayscale(70%); }
+.jcard.baja:hover { transform: translateY(-3px) !important; }
+
+/* Borde dorado si es refuerzo */
+.jcard.refuerzo { border: 2px solid var(--gold); box-shadow: 0 6px 24px var(--shadow), 0 0 0 1px rgba(200,168,75,.4), 0 0 20px rgba(200,168,75,.2); }
+
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) scale(.9); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Wrap de la credencial dentro de la tarjeta */
+.jcard-cred-wrap {
+    position: relative; line-height: 0; overflow: hidden;
+    border-radius: 14px 14px 0 0;
+    cursor: pointer;
+}
+.jcard-cred-wrap:hover .jcard-foto-btn { opacity: 1; }
+.jcard-foto-btn {
+    position: absolute; bottom: 8px; left: 8px;
+    padding: 4px 10px; background: rgba(0,0,0,.65);
+    border: 1px solid rgba(255,255,255,.25); color: #fff;
+    border-radius: 20px; font-size: .68rem; cursor: pointer;
+    font-family: 'Outfit', sans-serif; font-weight: 600;
+    opacity: 0; transition: opacity .2s; z-index: 5;
+}
+
+/* Sección info (fecha/edad) */
+.jcard-info {
+    padding: .5rem .9rem;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+}
+.jcard-info-row {
+    display: flex; justify-content: space-between; align-items: center;
+}
+.jcard-fecha { font-size: .68rem; color: var(--muted); }
+.jcard-edad  { font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(255,255,255,.08); color: var(--text2); }
+.jcard-edad.fuera { background: var(--red-dim); color: var(--red); }
+.jcard-edad.ref   { background: var(--gold-dim); color: var(--gold); }
+
+/* Controles baja/pago */
+.jcard-controls {
+    padding: .55rem .9rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-card);
+    display: flex; flex-direction: column; gap: .4rem;
+}
+.ctrl-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--muted);
+}
+
+/* Switch */
+.switch { position: relative; display: inline-block; width: 42px; height: 22px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background: var(--sw-off); border-radius: 22px;
+    transition: all .35s; border: 1px solid rgba(255,255,255,.08);
+}
+.slider::before {
+    position: absolute; content: "";
+    height: 14px; width: 14px; left: 3px; bottom: 3px;
+    background: white; border-radius: 50%; transition: .35s;
+    box-shadow: 0 1px 4px rgba(0,0,0,.3);
+}
+input:checked + .slider { background: var(--sw-on); border-color: transparent; }
+input:checked + .slider::before { transform: translateX(20px); }
+
+/* Botones editar/eliminar */
+.jcard-actions {
+    padding: .5rem .9rem;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    display: flex; gap: .5rem;
+}
+.jcard-btn-edit {
+    flex: 1; padding: .45rem; background: var(--accent-dim);
+    border: 1px solid rgba(59,130,246,.3); color: var(--accent);
+    border-radius: 8px; font-family: 'Outfit', sans-serif;
+    font-size: .75rem; font-weight: 700; cursor: pointer; transition: all .2s;
+}
+.jcard-btn-edit:hover { background: var(--accent); color: #fff; }
+.jcard-btn-del {
+    padding: .45rem .7rem; background: var(--red-dim);
+    border: 1px solid rgba(239,68,68,.3); color: var(--red);
+    border-radius: 8px; cursor: pointer; font-size: .8rem; transition: all .2s;
+}
+.jcard-btn-del:hover { background: var(--red); color: #fff; }
+
+/* ── Estado vacío ── */
+.estado-vacio {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1rem; padding: 4rem 1rem; text-align: center;
+}
+.vacio-title { font-family: 'Bebas Neue', cursive; font-size: 1.4rem; letter-spacing: 3px; color: var(--text2); }
+.vacio-sub   { font-size: .78rem; color: var(--muted); }
+
+/* ══════════════════════════════════════════════
+   MODAL JUGADOR (nuevo / editar con credencial)
+══════════════════════════════════════════════ */
+.overlay-modal { position: fixed; inset: 0; background: rgba(0,0,0,.8); display: none; z-index: 200; backdrop-filter: blur(8px); }
+.overlay-modal.activo { display: block; }
+
+.modal-jugador {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(.96);
+    width: min(820px, 96vw);
+    background: #0d1b2e;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    display: none; z-index: 300;
+    opacity: 0; transition: opacity .25s, transform .25s;
+    box-shadow: 0 24px 80px rgba(0,0,0,.8);
+    overflow: hidden;
+    max-height: 92vh;
+}
+.modal-jugador.activo {
+    display: flex; flex-direction: column;
+    opacity: 1; transform: translate(-50%, -50%) scale(1);
+}
+
+.mj-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 1.8rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+.mj-title { font-family: 'Bebas Neue', cursive; font-size: 1.4rem; letter-spacing: 4px; color: var(--accent); }
+.mj-close {
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--muted); width: 32px; height: 32px;
+    border-radius: 8px; cursor: pointer; font-size: .9rem;
+    display: flex; align-items: center; justify-content: center; transition: all .2s;
+}
+.mj-close:hover { color: var(--red); border-color: var(--red); }
+
+.mj-body {
+    display: flex; gap: 0; overflow: hidden;
+    flex: 1;
+}
+
+/* Lado izquierdo: preview credencial */
+.mj-preview-wrap {
+    flex: 1; padding: 1.5rem;
+    display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    background: rgba(0,0,0,.3);
+    border-right: 1px solid var(--border);
+    min-width: 0; overflow: hidden;
+}
+.mj-preview-label {
+    font-size: .62rem; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); font-weight: 600;
+}
+.mj-preview-cred {
+    width: 100%; display: flex; justify-content: center;
+    /* La credencial se renderiza aquí, ajustándose al ancho disponible */
+}
+.mj-foto-btn {
+    padding: .6rem 1.4rem;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.15);
+    color: rgba(255,255,255,.75);
+    border-radius: 10px; font-family: 'Outfit', sans-serif;
+    font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s;
+}
+.mj-foto-btn:hover { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+/* Lado derecho: campos */
+.mj-fields {
+    width: 300px; flex-shrink: 0;
+    padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+    overflow-y: auto;
+}
+.mj-field { display: flex; flex-direction: column; gap: .35rem; }
+.mj-lbl   { font-size: .6rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+.mj-input {
+    padding: .75rem 1rem;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px; color: var(--text);
+    font-family: 'Outfit', sans-serif; font-size: .92rem; font-weight: 600;
+    outline: none; transition: all .2s;
+}
+.mj-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
+.mj-err { font-size: .72rem; color: var(--red); font-weight: 600; min-height: 1rem; }
+.mj-actions { display: flex; gap: .7rem; margin-top: auto; padding-top: .5rem; }
+.mj-btn-cancel {
+    flex: 1; padding: .7rem;
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--text2); border-radius: 10px;
+    font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+}
+.mj-btn-cancel:hover { color: var(--text); }
+.mj-btn-save {
+    flex: 2; padding: .7rem;
+    background: linear-gradient(135deg, var(--green), #15803d);
+    border: none; color: #fff; border-radius: 10px;
+    font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+}
+.mj-btn-save:hover { transform: translateY(-1px); }
+
+/* ── Modales simples ── */
+.modal-simple {
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%,-50%) scale(.96);
+    background: #0d1b2e; border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem;
+    width: 90%; max-width: 380px;
+    display: none; z-index: 400; opacity: 0;
+    transition: opacity .2s, transform .2s;
+    box-shadow: 0 24px 64px rgba(0,0,0,.7); text-align: center;
+}
+.modal-simple.activo { display: block; opacity: 1; transform: translate(-50%,-50%) scale(1); }
+.modal-icon  { font-size: 2rem; margin-bottom: .8rem; }
+.modal-title { font-family: 'Bebas Neue', cursive; font-size: 1.4rem; letter-spacing: 3px; color: var(--accent); margin-bottom: .8rem; }
+.modal-warn .modal-title { color: var(--red); }
+.modal-text  { font-size: .87rem; color: var(--text2); line-height: 1.6; margin-bottom: 1.5rem; }
+.modal-actions { display: flex; gap: .8rem; justify-content: center; }
+.btn-cancel-modal {
+    padding: .65rem 1.3rem; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 10px; color: var(--text2);
+    font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 600; cursor: pointer;
+}
+.btn-del-modal {
+    padding: .65rem 1.3rem; background: var(--red-dim);
+    border: 1px solid rgba(239,68,68,.3); border-radius: 10px; color: var(--red);
+    font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
+}
+.btn-del-modal:hover { background: var(--red); color: #fff; }
+.btn-save-modal {
+    padding: .65rem 1.3rem; background: linear-gradient(135deg,var(--accent),#1d4ed8);
+    border: none; border-radius: 10px; color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer;
+}
+
+/* Filas panel impresión */
+.print-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px; cursor: pointer; transition: all .15s;
+}
+.print-row.selected { border-color: rgba(59,130,246,.5); background: rgba(59,130,246,.08); }
+.print-check  { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+.print-row-info  { flex: 1; min-width: 0; }
+.print-row-name  { font-weight: 700; font-size: .85rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.print-row-sub   { font-size: .68rem; color: rgba(255,255,255,.4); margin-top: 1px; }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+    .header { padding: .7rem 1rem; }
+    .header-right { display: none; }
+    .team-banner { padding: 1rem; flex-wrap: wrap; gap: .8rem; }
+    .container { padding: 1rem; }
+    .tarjetas-container { grid-template-columns: 1fr; }
+    .banner-right { flex-wrap: wrap; gap: .5rem; }
+
+    .modal-jugador {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        top: 0;
+        left: 0;
+        transform: none !important;
+        border-radius: 0;
+        overflow-y: auto;
+    }
+    .modal-jugador.activo {
+        transform: none !important;
+    }
+    .mj-body { flex-direction: column; overflow-y: auto; }
+    .mj-fields { width: 100%; }
+    .mj-preview-wrap { 
+        border-right: none; 
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+    }
+}
+
+/* ── Botón tema en header ── */
+.btn-tema {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+}
+.btn-tema:hover { border-color: var(--gold); color: var(--gold); }
+
+@media print {
+    .stadium-bg, .header, .team-banner,
+    .container, #panelImpresion,
+    #modalCredenciales, #overlayModal,
+    #overlayQREquipo, #modalQREquipo,
+    #modalJugador, #modalEliminar,
+    #modalRefuerzo { display: none !important; }
+
+    #zonaPrint           { display: block !important; }
+    #zonaPrintIndividual { display: block !important; }
+    #zonaPrintQREquipo   { display: block !important; }
+
+    @page {
+        size: letter portrait;
+        margin: 8mm;
+    }
+
+    body { background: #fff !important; margin: 0 !important; }
+
+    /* Cada página de credenciales llena la hoja */
+    #zonaPrint > div {
+        width: 100% !important;
+        height: 100vh !important;
+        page-break-after: always;
+        break-after: page;
+    }
+}
+
+@media (max-width: 700px) {
+    .modal-jugador {
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        border-radius: 0 !important;
+        overflow-y: auto !important;
+        position: fixed !important;
+    }
+    .modal-jugador.activo {
+        transform: none !important;
+    }
+}

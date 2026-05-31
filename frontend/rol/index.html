@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rol de Juegos — Fut 7 El Jaguar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- CSS REDISEÑADO -->
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="botones.css">
+    <link rel="stylesheet" href="estadisticas.css">
+    <link rel="stylesheet" href="jornadas.css">
+    <link rel="stylesheet" href="partidos.css">
+    <link rel="stylesheet" href="modal.css">
+</head>
+<script>
+  if (!sessionStorage.getItem('sesion_jaguar')) {
+    location.replace('../login/index.html');
+  }
+</script>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <button class="btn-volver-header" onclick="volverAtras()">← Volver</button>
+        </div>
+        <div class="header-center">
+            <div class="header-icon">🏆</div>
+            <div>
+                <div class="header-title" id="tituloRol">ROL DE JUEGOS</div>
+                <div class="header-sub" id="headerSub">Calendario de partidos</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn-header-pdf" onclick="descargarPDF()">📄 PDF</button>
+        </div>
+    </header>
+
+    <main class="rol-container">
+
+        <!-- BOTONES PRINCIPALES -->
+        <div class="botones-control">
+            <button class="btn btn-generar" id="btnGenerar" onclick="generarRol()">🏆 Crear Rol</button>
+            <button class="btn btn-agregar" id="btnAgregar" onclick="mostrarModalAgregar()" style="display:none;">➕ Agregar Equipos</button>
+            <button class="btn btn-eliminar" id="btnEliminar" onclick="eliminarRol()">🗑️ Eliminar Rol</button>
+        </div>
+
+        <!-- ESTADÍSTICAS -->
+        <div id="estadisticasContainer" class="info-estadisticas" style="display:none;">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="statEquipos">0</div>
+                    <div class="stat-label">Equipos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statJornadas">0</div>
+                    <div class="stat-label">Jornadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statPartidosJornada">0</div>
+                    <div class="stat-label">Por Jornada</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statTotalPartidos">0</div>
+                    <div class="stat-label">Total Partidos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <div id="navegacionContainer" class="navegacion-jornadas" style="display:none;">
+            <div class="nav-arrows">
+                <button class="btn-nav" id="btnPrimera" onclick="irAPrimeraJornada()">⏮</button>
+                <button class="btn-nav" id="btnAnterior" onclick="cambiarJornada(-1)">◀</button>
+                <span class="info-jornada" id="infoJornada">Jornada 1 de 1</span>
+                <button class="btn-nav" id="btnSiguiente" onclick="cambiarJornada(1)">▶</button>
+                <button class="btn-nav" id="btnUltima" onclick="irAUltimaJornada()">⏭</button>
+            </div>
+
+            <div class="nav-right">
+                <!-- BUSCADOR -->
+                <div class="buscador-jornada" id="buscadorJornada" style="display:none;">
+                    <input type="number" id="inputBuscarJornada" class="input-buscar-jornada" placeholder="#" min="1">
+                    <button class="btn-nav" onclick="irAJornada()">Ir</button>
+                </div>
+
+                <!-- SELECTOR VISTA -->
+                <div class="vista-selector">
+                    <button class="btn-vista active" onclick="cambiarVista('individual')">Individual</button>
+                    <button class="btn-vista" onclick="cambiarVista('todas')">Todas</button>
+                    <button class="btn-vista btn-vista-sugerencia" onclick="cambiarVista('sugerencia')" style="display:none;">🤖 IA</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR JORNADAS -->
+        <div id="jornadasContainer" class="jornadas-container jornadas-grid"></div>
+
+    </main>
+
+    <!-- MODAL AGREGAR EQUIPOS -->
+    <div id="overlayModal" class="overlay-modal" style="display:none;" onclick="cerrarModalAgregar()"></div>
+    <div id="modalAgregar" class="modal-agregar" style="display:none;">
+        <div class="modal-header">
+            <div class="modal-title">➕ Agregar Equipos al Torneo</div>
+            <button class="modal-close" onclick="cerrarModalAgregar()">✕</button>
+        </div>
+        <div class="modal-info">
+            ⚠️ Las jornadas marcadas como jugadas se mantendrán intactas. Los nuevos equipos se integrarán en las jornadas restantes.
+        </div>
+        <div class="equipos-disponibles" id="equiposDisponibles"></div>
+        <div class="modal-buttons">
+            <button class="btn btn-cancelar" onclick="cerrarModalAgregar()">Cancelar</button>
+            <button class="btn btn-generar" onclick="agregarEquiposAlRol()">✅ Agregar Seleccionados</button>
+        </div>
+    </div>
+
+    <!-- LIBRERÍAS PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- JS ORIGINALES SIN CAMBIOS -->
+    <script src="animacion-carga.js"></script>
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="vista-jornadas.js"></script>
+    <script src="sugerencia-partidos.js"></script>
+    <script src="partidos-equipos.js"></script>
+    <script src="rol-generator.js"></script>
+
+</body>
+</html>
