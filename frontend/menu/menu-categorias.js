@@ -1,4 +1,4 @@
-const API = 'http://localhost:3001';
+const API = 'https://team-soccer-api.onrender.com';
 
 function mostrarToast(mensaje, tipo = 'exito') {
     let toast = document.getElementById('toast-notif');

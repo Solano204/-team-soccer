@@ -218,13 +218,13 @@ function volverAtras() {
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Inicializando horarios...');
     try {
-        const resCats = await fetch('http://localhost:3001/categorias');
+        const resCats = await fetch('https://team-soccer-api.onrender.com/categorias');
         window._categoriasDB = await resCats.json();
         
         // Cargar rol de cada categoría en localStorage para que horarios lo encuentre
         for (const cat of window._categoriasDB) {
             try {
-                const resRol = await fetch(`http://localhost:3001/rol/${cat.id}`);
+                const resRol = await fetch(`https://team-soccer-api.onrender.com/rol/${cat.id}`);
                 const rolData = await resRol.json();
                 if (rolData && rolData.jornadas) {
                     localStorage.setItem(`rol_${cat.nombre}`, JSON.stringify(rolData.jornadas));
@@ -275,7 +275,7 @@ guardarHorariosRailway();
 }
 
 // ── RAILWAY ──────────────────────────────────────────
-const API_HORARIOS = 'http://localhost:3001';
+const API_HORARIOS = 'https://team-soccer-api.onrender.com';
 
 async function cargarHorariosRailway() {
     try {

@@ -1,6 +1,6 @@
 // ========== CONFIGURACIÓN Y VARIABLES GLOBALES ==========
 
-const API = 'http://localhost:3001';
+const API = 'https://team-soccer-api.onrender.com';
 
 // Variables globales del estado de la aplicación
 let jornadaActual = 0;

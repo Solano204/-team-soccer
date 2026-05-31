@@ -198,7 +198,7 @@ if (categoria && equipo) {
     document.getElementById('pageSub').textContent = equipo + ' · ' + categoria + ' — Crea y asigna diseños de credencial';
 }
 
-var API = 'http://localhost:3001';
+var API = 'https://team-soccer-api.onrender.com';
 async function getDisenos() {
     try {
         var r = await fetch(API + '/disenos/' + encodeURIComponent(categoria));

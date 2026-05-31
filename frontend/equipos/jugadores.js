@@ -71,7 +71,7 @@ function sincronizarActivos() {
 // ── Diseño de credencial ──
 async function getDiseno() {
     try {
-        const r = await fetch('http://localhost:3001/disenos/' + encodeURIComponent(categoria));
+        const r = await fetch('https://team-soccer-api.onrender.com/disenos/' + encodeURIComponent(categoria));
         const lista = await r.json();
         return lista.find(d => d.activo == 1 || d.activo === true) || null;
     } catch(e) { return null; }
@@ -741,7 +741,7 @@ async function imprimirAhora() {
 //  QR
 // ══════════════════════════════════════════════
 function generarQREquipo() {
-    const base = 'http://localhost:3001/publico';
+    const base = 'https://team-soccer-api.onrender.com/publico';
     const url  = `${base}?categoria=${encodeURIComponent(categoria)}&equipo=${encodeURIComponent(equipo)}`;
     document.getElementById('qrEquipoText').textContent = `Escanea para ver las credenciales de ${equipo} · ${categoria}`;
     const canvas = document.getElementById('qrEquipoCanvas');
@@ -802,7 +802,7 @@ function toast(msg, tipo = 'ok') {
 })();
 
 // ── Init ──
-const API = 'http://localhost:3001';
+const API = 'https://team-soccer-api.onrender.com';
 let _jugadoresDB = [];
 let _equipoDB = null;
 

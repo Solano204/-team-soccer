@@ -1,4 +1,4 @@
-const API = 'http://localhost:3001';
+const API = 'https://team-soccer-api.onrender.com';
 let _equiposDB = [];
 
 // =============================================
@@ -496,7 +496,7 @@ function generarQRCategoria() {
         : 'Sin diseño asignado aún. El QR mostrará la lista de jugadores.';
 
     // URL pública que mostrará las credenciales
-    var baseURL = 'http://localhost:3001/publico';
+    var baseURL = 'https://team-soccer-api.onrender.com/publico';
 var qrURL   = baseURL + '?categoria=' + encodeURIComponent(categoria);
 
     // Limpiar QR anterior
