@@ -15,6 +15,15 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || 'npg_Jr93WiZEaQfI',
   ssl: { rejectUnauthorized: false }
 });
+app.get('/test-env', (req, res) => {
+  res.json({
+    host: process.env.DB_HOST || 'NOT SET',
+    port: process.env.DB_PORT || 'NOT SET',
+    db:   process.env.DB_NAME || 'NOT SET',
+    user: process.env.DB_USER || 'NOT SET',
+    node_env: process.env.NODE_ENV || 'NOT SET'
+  });
+});
 
 
 // ── CATEGORÍAS ──────────────────────────────────────────────────────
