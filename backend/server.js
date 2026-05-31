@@ -8,8 +8,8 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 const pool = new Pool({
-  host:     process.env.DB_HOST     || 'ep-green-feather-apw0gn0b-pooler.c-7.us-east-1.aws.neon.tech',
-  port:     parseInt(process.env.DB_PORT || '6543'),
+  host:     process.env.DB_HOST     || 'ep-green-feather-apw0gn0b.c-7.us-east-1.aws.neon.tech',
+  port:     parseInt(process.env.DB_PORT || '5432'),
   database: process.env.DB_NAME     || 'neondb',
   user:     process.env.DB_USER     || 'neondb_owner',
   password: process.env.DB_PASSWORD || 'npg_Jr93WiZEaQfI',
